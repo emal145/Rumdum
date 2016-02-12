@@ -6,10 +6,10 @@ Rundum.Boot = function() {};
 Rundum.Boot.prototype = {
   preload: function() {
     this.load.image('logo', 'assets/images/logo.png');
-    this.load.image('preloadbar', 'assets/images/preloader-bar.png');
+    this.load.image('preloadbar', 'assets/images/loadBar.png');
   },
   create: function() {
-    this.game.stage.backgroundColor = '#fff';
+    this.game.stage.backgroundColor = '#000';
     
     //  Unless you specifically know your game needs to support multi-touch I would recommend setting this to 1
     this.input.maxPointers = 1;
