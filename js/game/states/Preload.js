@@ -1,8 +1,8 @@
-ZenvaRunner.Preload = function() {
+Rundum.Preload = function() {
   this.ready = false;
 };
 
-ZenvaRunner.Preload.prototype = {
+Rundum.Preload.prototype = {
   preload: function() {
 
     this.splash = this.add.sprite(this.game.world.centerX, this.game.world.centerY, 'logo');

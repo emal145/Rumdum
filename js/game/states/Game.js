@@ -1,4 +1,4 @@
-ZenvaRunner.Game = function() {
+Rundum.Game = function() {
   this.playerMinAngle = -20;
   this.playerMaxAngle = 20;
   
@@ -16,7 +16,7 @@ ZenvaRunner.Game = function() {
   this.coinSpacingY = 10;
 };
 
-ZenvaRunner.Game.prototype = {
+Rundum.Game.prototype = {
   create: function() {
 
     this.game.world.bound = new Phaser.Rectangle(0,0, this.game.width + 300, this.game.height);

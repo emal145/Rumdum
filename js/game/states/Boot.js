@@ -1,9 +1,9 @@
 
-var ZenvaRunner = function() {};
+var Rundum = function() {};
 
-ZenvaRunner.Boot = function() {};
+Rundum.Boot = function() {};
 
-ZenvaRunner.Boot.prototype = {
+Rundum.Boot.prototype = {
   preload: function() {
     this.load.image('logo', 'assets/images/logo.png');
     this.load.image('preloadbar', 'assets/images/preloader-bar.png');
