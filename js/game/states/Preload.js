@@ -11,7 +11,7 @@ Rundum.Preload.prototype = {
     this.preloadBar = this.add.sprite(this.game.world.centerX, this.game.world.centerY + 128, 'preloadbar');
     this.preloadBar.anchor.setTo(0.5);
 
-    this.load.setPreloadSprite(this.preloadBar);
+    this.load.setPreloadSprite(this.preloadBar,0);
 
     this.load.image('ground', 'assets/images/ground.png');
     this.load.image('background', 'assets/images/background.png');
