@@ -1,4 +1,4 @@
-Rundum.Game = function() {
+IlioLostInSpace.Game = function() {
   this.playerMinAngle = -20;
   this.playerMaxAngle = 20;
   
@@ -16,7 +16,7 @@ Rundum.Game = function() {
   this.coinSpacingY = 10;
 };
 
-Rundum.Game.prototype = {
+IlioLostInSpace.Game.prototype = {
   create: function() {
 
     this.game.world.bound = new Phaser.Rectangle(0,0, this.game.width + 300, this.game.height);

@@ -1,8 +1,8 @@
-Rundum.Preload = function() {
+IlioLostInSpace.Preload = function() {
   this.ready = false;
 };
 
-Rundum.Preload.prototype = {
+IlioLostInSpace.Preload.prototype = {
   preload: function() {
 
     this.splash = this.add.sprite(this.game.world.centerX, this.game.world.centerY, 'logo');

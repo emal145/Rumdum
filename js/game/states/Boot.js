@@ -1,9 +1,9 @@
 
-var Rundum = function() {};
+var IlioLostInSpace = function() {};
 
-Rundum.Boot = function() {};
+IlioLostInSpace.Boot = function() {};
 
-Rundum.Boot.prototype = {
+IlioLostInSpace.Boot.prototype = {
   preload: function() {
     this.load.image('logo', 'assets/images/logo.png');
     this.load.image('preloadbar', 'assets/images/loadBar.png');
