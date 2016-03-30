@@ -1,4 +1,6 @@
-var game = new Phaser.Game(600, window.innerHeight * window.devicePixelRatio, Phaser.AUTO, '');
+var game = new Phaser.Game(600, window.innerHeight, Phaser.AUTO, '');
+
+
 
 game.state.add('Boot', IlioLostInSpace.Boot);
 game.state.add('Preloader', IlioLostInSpace.Preload);

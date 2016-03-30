@@ -13,12 +13,10 @@ IlioLostInSpace.Preload.prototype = {
 
     this.load.setPreloadSprite(this.preloadBar,0);
 
-    this.load.image('ground', 'assets/images/ground.png');
     this.load.image('background', 'assets/images/background.png');
-    this.load.image('foreground', 'assets/images/foreground.png');
 
     this.load.spritesheet('coins', 'assets/images/coins-ps.png', 51, 51, 7);
-    this.load.spritesheet('player', 'assets/images/jetpack-ps.png', 229, 296, 4);
+    this.load.spritesheet('player', 'assets/images/player.png', 100, 100, 16);
     this.load.spritesheet('missile', 'assets/images/missiles-ps.png', 361, 218, 4);
 
     this.load.audio('gameMusic', ['assets/audio/Pamgaea.mp3', 'assets/audio/Pamgaea.ogg']);
@@ -35,9 +33,10 @@ IlioLostInSpace.Preload.prototype = {
     this.preloadBar.cropEnabled = false;
   }, 
   update: function() {
-    if(this.cache.isSoundDecoded('gameMusic') && this.ready === true) {
+    //if(this.cache.isSoundDecoded('gameMusic') && this.ready === true) {
       this.state.start('MainMenu');
-    }
+    //}
+
   },
   onLoadComplete: function() {
     this.ready = true;
