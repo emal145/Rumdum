@@ -5,16 +5,13 @@ IlioLostInSpace.Preload = function() {
 IlioLostInSpace.Preload.prototype = {
   preload: function() {
 
-    //this.splash = this.add.sprite(this.game.world.centerX, this.game.world.centerY - 300, 'logo');
-    //this.splash.anchor.setTo(0.5);
-    //this.splash.scale.setTo(0.5);
-    this.titleText = game.make.text(game.world.centerX,game.world.centerY, "Loading...", {
+
+    this.loadingText = game.make.text(game.world.centerX,game.world.centerY, "Loading...", {
       font: 'bold 20pt Arial',
       fill: '#000000',
       align: 'center'
     });
-    //this.titleText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 5);
-    this.titleText.anchor.set(0.5);
+    this.loadingText.anchor.set(0.5);
 
 
     this.preloadBar = this.add.sprite(this.game.world.centerX, this.game.world.centerY + 128, 'preloadbar');
@@ -23,7 +20,10 @@ IlioLostInSpace.Preload.prototype = {
 
     this.load.setPreloadSprite(this.preloadBar,0);
 
-    this.load.image('background', 'assets/images/background.png');
+    this.load.image('menueBackground', 'assets/images/backgroundMenue.png');
+    this.load.image('menueStartButton', 'assets/images/startButton.png');
+    this.load.image('menueHighscoreButton', 'assets/images/highscoreButton.png');
+    this.load.image('menueExitButton', 'assets/images/exitButton.png');
 
     this.load.spritesheet('coins', 'assets/images/coins-ps.png', 51, 51, 7);
     this.load.spritesheet('player', 'assets/images/player.png', 100, 100, 16);
@@ -41,7 +41,7 @@ IlioLostInSpace.Preload.prototype = {
   },
   create: function() {
     this.preloadBar.cropEnabled = false;
-    this.game.add.existing(this.titleText);
+    this.game.add.existing(this.loadingText);
   }, 
   update: function() {
     if(this.cache.isSoundDecoded('gameMusic') && this.ready === true) {

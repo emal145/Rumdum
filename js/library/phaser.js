@@ -2875,12 +2875,12 @@ PIXI.BitmapText.fonts = {};
  * @class Stage
  * @extends DisplayObjectContainer
  * @constructor
- * @param backgroundColor {Number} the background color of the stage, you have to pass this in is in hex format
+ * @param backgroundColor {Number} the backgroundMenue color of the stage, you have to pass this in is in hex format
  *      like: 0xFFFFFF for white
  * 
  * Creating a stage is a mandatory process when you use Pixi, which is as simple as this : 
  * var stage = new PIXI.Stage(0xFFFFFF);
- * where the parameter given is the background colour of the stage, in hex
+ * where the parameter given is the backgroundMenue colour of the stage, in hex
  * you will use this stage instance to add your sprites to it and therefore to the renderer
  * Here is how to add a sprite to the stage : 
  * stage.addChild(sprite);
@@ -2975,10 +2975,10 @@ PIXI.Stage.prototype.updateTransform = function()
 };
 
 /**
- * Sets the background color for the stage
+ * Sets the backgroundMenue color for the stage
  *
  * @method setBackgroundColor
- * @param backgroundColor {Number} the color of the background, easiest way to pass this in is in hex format
+ * @param backgroundColor {Number} the color of the backgroundMenue, easiest way to pass this in is in hex format
  *      like: 0xFFFFFF for white
  */
 PIXI.Stage.prototype.setBackgroundColor = function(backgroundColor)
@@ -7278,9 +7278,9 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
 
     /**
      * This sets if the CanvasRenderer will clear the canvas or not before the new render pass.
-     * If the Stage is NOT transparent Pixi will use a canvas sized fillRect operation every frame to set the canvas background color.
+     * If the Stage is NOT transparent Pixi will use a canvas sized fillRect operation every frame to set the canvas backgroundMenue color.
      * If the Stage is transparent Pixi will use clearRect to clear the canvas every frame.
-     * Disable this by setting this to false. For example if your game has a canvas filling background image you often don't need this set.
+     * Disable this by setting this to false. For example if your game has a canvas filling backgroundMenue image you often don't need this set.
      *
      * @property clearBeforeRender
      * @type Boolean
@@ -15278,7 +15278,7 @@ Phaser.Stage = function (game, width, height) {
     this._nextOffsetCheck = 0;
 
     /**
-    * @property {number} _backgroundColor - Stage background color.
+    * @property {number} _backgroundColor - Stage backgroundMenue color.
     * @private
     */
     this._backgroundColor = 0x000000;
@@ -15539,10 +15539,10 @@ Phaser.Stage.prototype.visibilityChange = function (event) {
 };
 
 /**
-* Sets the background color for the stage.
+* Sets the backgroundMenue color for the stage.
 *
 * @name Phaser.Stage#setBackgroundColor
-* @param {number} backgroundColor - The color of the background, easiest way to pass this in is in hex format like: 0xFFFFFF for white.
+* @param {number} backgroundColor - The color of the backgroundMenue, easiest way to pass this in is in hex format like: 0xFFFFFF for white.
 */
 Phaser.Stage.prototype.setBackgroundColor = function(backgroundColor)
 {
@@ -15555,7 +15555,7 @@ Phaser.Stage.prototype.setBackgroundColor = function(backgroundColor)
 
 /**
 * @name Phaser.Stage#backgroundColor
-* @property {number|string} backgroundColor - Gets and sets the background color of the stage. The color can be given as a number: 0xff0000 or a hex string: '#ff0000'
+* @property {number|string} backgroundColor - Gets and sets the backgroundMenue color of the stage. The color can be given as a number: 0xff0000 or a hex string: '#ff0000'
 */
 Object.defineProperty(Phaser.Stage.prototype, "backgroundColor", {
 
@@ -18304,7 +18304,7 @@ Object.defineProperty(Phaser.ScaleManager.prototype, "isLandscape", {
 * @param {number} [renderer=Phaser.AUTO] - Which renderer to use: Phaser.AUTO will auto-detect, Phaser.WEBGL, Phaser.CANVAS or Phaser.HEADLESS (no rendering at all).
 * @param {string|HTMLElement} [parent=''] - The DOM element into which this games canvas will be injected. Either a DOM ID (string) or the element itself.
 * @param {object} [state=null] - The default state object. A object consisting of Phaser.State functions (preload, create, update, render) or null.
-* @param {boolean} [transparent=false] - Use a transparent canvas background or not.
+* @param {boolean} [transparent=false] - Use a transparent canvas backgroundMenue or not.
 * @param  {boolean} [antialias=true] - Draw all image textures anti-aliased or not. The default is for smooth textures, but disable if your game features pixel art.
 * @param {object} [physicsConfig=null] - A physics configuration object to pass to the Physics world on creation.
 */
@@ -18344,7 +18344,7 @@ Phaser.Game = function (width, height, renderer, parent, state, transparent, ant
     this.height = 600;
 
     /**
-    * @property {boolean} transparent - Use a transparent canvas background or not.
+    * @property {boolean} transparent - Use a transparent canvas backgroundMenue or not.
     * @default
     */
     this.transparent = false;
@@ -18790,23 +18790,23 @@ Phaser.Game.prototype = {
         {
             var args = [
                 '%c %c %c Phaser v' + v + ' - ' + r + ' - ' + a + '  %c %c ' + ' http://phaser.io  %c %c ♥%c♥%c♥ ',
-                'background: #0cf300',
-                'background: #00bc17',
-                'color: #ffffff; background: #00711f;',
-                'background: #00bc17',
-                'background: #0cf300',
-                'background: #00bc17'
+                'backgroundMenue: #0cf300',
+                'backgroundMenue: #00bc17',
+                'color: #ffffff; backgroundMenue: #00711f;',
+                'backgroundMenue: #00bc17',
+                'backgroundMenue: #0cf300',
+                'backgroundMenue: #00bc17'
             ];
 
             for (var i = 0; i < 3; i++)
             {
                 if (i < c)
                 {
-                    args.push('color: #ff2424; background: #fff');
+                    args.push('color: #ff2424; backgroundMenue: #fff');
                 }
                 else
                 {
-                    args.push('color: #959595; background: #fff');
+                    args.push('color: #959595; backgroundMenue: #fff');
                 }
             }
 
@@ -32105,10 +32105,10 @@ Phaser.Canvas = {
     },
 
     /**
-    * Sets the background color behind the canvas. This changes the canvas style property.
+    * Sets the backgroundMenue color behind the canvas. This changes the canvas style property.
     *
     * @method Phaser.Canvas.setBackgroundColor
-    * @param {HTMLCanvasElement} canvas - The canvas to set the background color on.
+    * @param {HTMLCanvasElement} canvas - The canvas to set the backgroundMenue color on.
     * @param {string} [color] - The color to set. Can be in the format 'rgb(r,g,b)', or '#RRGGBB' or any valid CSS color.
     * @return {HTMLCanvasElement} Returns the source canvas.
     */
@@ -44006,7 +44006,7 @@ Phaser.Utils.Debug = function (game) {
     this.lineHeight = 16;
 
     /**
-    * @property {boolean} renderShadow - Should the text be rendered with a slight shadow? Makes it easier to read on different types of background.
+    * @property {boolean} renderShadow - Should the text be rendered with a slight shadow? Makes it easier to read on different types of backgroundMenue.
     */
     this.renderShadow = true;
 
@@ -50602,16 +50602,16 @@ Phaser.Tilemap.prototype = {
                 {
                     if (this.debugMap[this.layers[this.currentLayer].data[y][x]])
                     {
-                        args.push("background: " + this.debugMap[this.layers[this.currentLayer].data[y][x]]);
+                        args.push("backgroundMenue: " + this.debugMap[this.layers[this.currentLayer].data[y][x]]);
                     }
                     else
                     {
-                        args.push("background: #ffffff");
+                        args.push("backgroundMenue: #ffffff");
                     }
                 }
                 else
                 {
-                    args.push("background: rgb(0, 0, 0)");
+                    args.push("backgroundMenue: rgb(0, 0, 0)");
                 }
             }
 

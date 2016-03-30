@@ -20,8 +20,8 @@ IlioLostInSpace.Game.prototype = {
   create: function() {
 
     this.game.world.bound = new Phaser.Rectangle(0,0, this.game.width + 300, this.game.height);
-    this.background = this.game.add.tileSprite(0, 0, this.game.width, 512, 'background');
-    this.background.autoScroll(-100, 0);
+    this.backgroundMenue = this.game.add.tileSprite(0, 0, this.game.width, 512, 'backgroundMenue');
+    this.backgroundMenue.autoScroll(-100, 0);
 
     this.foreground = this.game.add.tileSprite(0, 470, this.game.width, this.game.height - 533, 'foreground');
     this.foreground.autoScroll(-100,0);
@@ -220,7 +220,7 @@ IlioLostInSpace.Game.prototype = {
     this.gameMusic.stop();
     
     this.ground.stopScroll();
-    this.background.stopScroll();
+    this.backgroundMenue.stopScroll();
     this.foreground.stopScroll();
 
     this.enemies.setAll('body.velocity.x', 0);
