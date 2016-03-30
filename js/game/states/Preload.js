@@ -5,11 +5,21 @@ IlioLostInSpace.Preload = function() {
 IlioLostInSpace.Preload.prototype = {
   preload: function() {
 
-    this.splash = this.add.sprite(this.game.world.centerX, this.game.world.centerY, 'logo');
-    this.splash.anchor.setTo(0.5);
+    //this.splash = this.add.sprite(this.game.world.centerX, this.game.world.centerY - 300, 'logo');
+    //this.splash.anchor.setTo(0.5);
+    //this.splash.scale.setTo(0.5);
+    this.titleText = game.make.text(game.world.centerX,game.world.centerY, "Loading...", {
+      font: 'bold 20pt Arial',
+      fill: '#000000',
+      align: 'center'
+    });
+    //this.titleText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 5);
+    this.titleText.anchor.set(0.5);
+
 
     this.preloadBar = this.add.sprite(this.game.world.centerX, this.game.world.centerY + 128, 'preloadbar');
     this.preloadBar.anchor.setTo(0.5);
+    //this.preloadBar.scale.setTo(0.9);
 
     this.load.setPreloadSprite(this.preloadBar,0);
 
@@ -31,11 +41,12 @@ IlioLostInSpace.Preload.prototype = {
   },
   create: function() {
     this.preloadBar.cropEnabled = false;
+    this.game.add.existing(this.titleText);
   }, 
   update: function() {
-    //if(this.cache.isSoundDecoded('gameMusic') && this.ready === true) {
+    if(this.cache.isSoundDecoded('gameMusic') && this.ready === true) {
       this.state.start('MainMenu');
-    //}
+    }
 
   },
   onLoadComplete: function() {

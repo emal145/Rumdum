@@ -36,8 +36,9 @@ IlioLostInSpace.MainMenu.prototype = {
 
     //this.game.add.tween(this.player).to({y: this.player.y - 16}, 500, Phaser.Easing.Linear.NONE, true, 0, Infinity, true);
 
-    this.splash = this.add.sprite(this.game.world.centerX, this.game.world.centerY, 'logo');
+    this.splash = this.add.sprite(this.game.world.centerX, this.game.world.centerY - 300, 'logo');
     this.splash.anchor.setTo(0.5);
+    this.splash.scale.setTo(0.5);
 
 
     this.startText = this.game.add.bitmapText(0,0, 'minecraftia', 'tap to start', 32);

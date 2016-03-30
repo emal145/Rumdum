@@ -6,10 +6,10 @@ IlioLostInSpace.Boot = function() {};
 IlioLostInSpace.Boot.prototype = {
   preload: function() {
     this.load.image('logo', 'assets/images/logo.png');
-    this.load.image('preloadbar', 'assets/images/loadBar.png');
+    this.load.image('preloadbar', 'assets/images/loadbar.png');
   },
   create: function() {
-    this.game.stage.backgroundColor = '#000';
+    this.game.stage.backgroundColor = '#80D2ED';
     
     //  Unless you specifically know your game needs to support multi-touch I would recommend setting this to 1
     this.input.maxPointers = 1;
