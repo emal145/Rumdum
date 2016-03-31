@@ -274,28 +274,26 @@ IlioLostInSpace.Game.prototype = {
             //Nächstes Level
             this.levelstage++;
             this.levelBackground.kill();
-            this.levelBackground = this.game.add.sprite(0, (this.game.height-this.levelBackground.y)-1800, this.game.width, 1200, this.getLevelStage());
+            this.levelBackground = this.game.add.sprite(this.game.width, 1200, this.getLevelStage());
             this.levelBackgroundInverse.z = -1;
             this.changeBackground = true;
             this.backgroundCounter = 0;
 
         }
-        else{
             //Background wieder auf die startposition zurücksetzen
             this.levelBackground.y = (this.game.width-this.levelBackground.y)-1800;
-        }
     }
     if (this.levelBackgroundInverse.y >= this.game.height) {
         //Background wieder auf die startposition zurücksetzen
         if(this.changeBackground == true){
-            this.levelBackgroundInverse = this.game.add.tileSprite(0, (this.game.height-this.levelBackgroundInverse.y)-1800, this.game.width, 1200, this.getLevelStage());
+            this.levelBackgroundInverse = this.game.add.tileSprite(this.game.width, 1200, this.getLevelStage());
             this.levelBackgroundInverse.z = -1;
             this.changeBackground = false;
 
-        }else{
+        }
+
             this.levelBackgroundInverse.y = (this.game.width-this.levelBackgroundInverse.y)-1800;
 
-        }
     }
   },
 
