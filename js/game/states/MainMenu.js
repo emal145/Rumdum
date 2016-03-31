@@ -1,11 +1,6 @@
 IlioLostInSpace.MainMenu = function() {};
 
 
-
-
-
-
-
 IlioLostInSpace.MainMenu.prototype = {
 
   addMenuOption: function(text, callback) {
@@ -41,20 +36,9 @@ IlioLostInSpace.MainMenu.prototype = {
     this.backgroundMenue = this.game.add.sprite(0,0,'menueBackground');
     this.backgroundMenue.height = this.game.height;
     this.backgroundMenue.width = this.game.width;
-<<<<<<< Updated upstream
-    //Hintergrundbild für das Menü wird geladen und an die Höhe und Breite des Spielfensters angepasst
-=======
+    //Hintergrundbild fï¿½r das Menï¿½ wird geladen und an die Hï¿½he und Breite des Spielfensters angepasst
     //this.backgroundMenue = this.game.add.tileSprite(0, this.game.height-600, 600, 600, 'backgroundMenue');
     //Hintergrundbild fï¿½r das Menï¿½ wird geladen und an die Hï¿½he und Breite des Spielfensters angepasst
-    this.menueItems = this.game.add.group();
-
-    this.startGameButton = this.game.add.sprite(this.game.world.centerX,this.game.world.centerY-150,'menueStartButton');
-    //this.startGameButton.anchor.setTo(0.5);
-    this.highscoreButton = this.game.add.sprite(this.game.world.centerX,this.game.world.centerY,'menueHighscoreButton');
-    this.highscoreButton.scale.setTo(0.6);
-    this.exitGameButton = this.game.add.sprite(this.game.world.centerX,this.game.world.centerY + 150,'menueExitButton');
-    this.exitGameButton.scale.setTo(0.4);
->>>>>>> Stashed changes
 
 
     //this.ground = this.game.add.tileSprite(0, this.game.height - 73, this.game.width, 73, 'ground');
