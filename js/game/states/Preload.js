@@ -3,11 +3,42 @@ IlioLostInSpace.Preload = function() {
 };
 
 IlioLostInSpace.Preload.prototype = {
+
+    loadScripts: function () {
+        game.load.script('WebFont', 'js/scripts/webfontloader.js');
+    },
+
+  loadFonts: function () {
+    WebFontConfig = {
+      custom: {
+        families: ['TheMinion'],
+        urls: ['assets/styles/theminion.css']
+      }
+    }
+  },
+  loadImages: function () {
+    this.load.image('menueBackground', 'assets/images/backgroundMenue.png');
+
+  },
+  loadAudio: function() {
+
+      this.load.audio('gameMusic', ['assets/audio/Pamgaea.mp3', 'assets/audio/Pamgaea.ogg']);
+      this.load.audio('rocket', 'assets/audio/rocket.wav');
+      this.load.audio('bounce', 'assets/audio/bounce.wav');
+      this.load.audio('coin', 'assets/audio/coin.wav');
+      this.load.audio('death', 'assets/audio/death.wav');
+
+  },
+  loadSprites: function() {
+      this.load.spritesheet('coins', 'assets/images/coins-ps.png', 51, 51, 7);
+      this.load.spritesheet('player', 'assets/images/player.png', 100, 100, 16);
+      this.load.spritesheet('missile', 'assets/images/missiles-ps.png', 361, 218, 4);
+  },
+
   preload: function() {
 
-
     this.loadingText = game.make.text(game.world.centerX,game.world.centerY, "Loading...", {
-      font: 'bold 20pt Arial',
+      font: 'bold 20pt TheMinion',
       fill: '#000000',
       align: 'center'
     });
@@ -20,22 +51,11 @@ IlioLostInSpace.Preload.prototype = {
 
     this.load.setPreloadSprite(this.preloadBar,0);
 
-    this.load.image('menueBackground', 'assets/images/backgroundMenue.png');
-    this.load.image('menueStartButton', 'assets/images/startButton.png');
-    this.load.image('menueHighscoreButton', 'assets/images/highscoreButton.png');
-    this.load.image('menueExitButton', 'assets/images/exitButton.png');
-
-    this.load.spritesheet('coins', 'assets/images/coins-ps.png', 51, 51, 7);
-    this.load.spritesheet('player', 'assets/images/player.png', 100, 100, 16);
-    this.load.spritesheet('missile', 'assets/images/missiles-ps.png', 361, 218, 4);
-
-    this.load.audio('gameMusic', ['assets/audio/Pamgaea.mp3', 'assets/audio/Pamgaea.ogg']);
-    this.load.audio('rocket', 'assets/audio/rocket.wav');
-    this.load.audio('bounce', 'assets/audio/bounce.wav');
-    this.load.audio('coin', 'assets/audio/coin.wav');
-    this.load.audio('death', 'assets/audio/death.wav');
-
-    this.load.bitmapFont('minecraftia', 'assets/fonts/minecraftia/minecraftia.png', 'assets/fonts/minecraftia/minecraftia.xml');
+   this.loadImages();
+    this.loadSprites();
+    this.loadAudio();
+    this.loadFonts();
+    this.loadScripts();
 
     this.load.onLoadComplete.add(this.onLoadComplete, this);
   },

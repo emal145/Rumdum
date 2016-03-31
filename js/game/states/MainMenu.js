@@ -8,45 +8,63 @@ IlioLostInSpace.MainMenu = function() {};
 
 IlioLostInSpace.MainMenu.prototype = {
 
+  addMenuOption: function(text, callback) {
+    var optionStyle = { font: '30pt TheMinion', fill: 'black', align: 'left', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
+    var txt = game.add.text(game.world.centerX, (this.optionCount * 100) + 200, text, optionStyle);
+    txt.anchor.setTo(0.5);
+    txt.stroke = "rgba(0,0,0,0";
+    txt.strokeThickness = 4;
+    var onOver = function (target) {
+      target.fill = "#FEFFD5";
+      target.stroke = "rgba(200,200,200,0.5)";
+      txt.useHandCursor = true;
+    };
+    var onOut = function (target) {
+      target.fill = "black";
+      target.stroke = "rgba(0,0,0,0)";
+      txt.useHandCursor = false;
+    };
+    //txt.useHandCursor = true;
+    txt.inputEnabled = true;
+    txt.events.onInputUp.add(callback, this);
+    txt.events.onInputOver.add(onOver, this);
+    txt.events.onInputOut.add(onOut, this);
+
+    this.optionCount ++;
 
 
-
+  },
+  preload: function () {
+    this.optionCount = 1;
+  },
   create: function() {
     this.backgroundMenue = this.game.add.sprite(0,0,'menueBackground');
     this.backgroundMenue.height = this.game.height;
     this.backgroundMenue.width = this.game.width;
-    //this.backgroundMenue = this.game.add.tileSprite(0, this.game.height-600, 600, 600, 'backgroundMenue');
     //Hintergrundbild für das Menü wird geladen und an die Höhe und Breite des Spielfensters angepasst
-    this.menueItems = this.game.add.group();
-
-    this.startGameButton = this.game.add.sprite(this.game.world.centerX,this.game.world.centerY-150,'menueStartButton');
-    //this.startGameButton.anchor.setTo(0.5);
-    this.highscoreButton = this.game.add.sprite(this.game.world.centerX,this.game.world.centerY,'menueHighscoreButton');
-    this.highscoreButton.scale.setTo(0.6);
-    this.exitGameButton = this.game.add.sprite(this.game.world.centerX,this.game.world.centerY + 150,'menueExitButton');
-    this.exitGameButton.scale.setTo(0.4);
 
 
     //this.ground = this.game.add.tileSprite(0, this.game.height - 73, this.game.width, 73, 'ground');
     //this.ground.autoScroll(-400, 0);
+    this.addMenuOption('Start Game', function() {
 
+      this.game.state.start('Game');
 
-    this.menueItems.add(this.startGameButton);
-    this.menueItems.add(this.highscoreButton);
-    this.menueItems.add(this.exitGameButton);
+    });
+    this.addMenuOption('Highscore', function() {
 
-    this.menueItems.forEach(function(item) {
-      item.anchor.setTo(0.5);
+      this.game.state.start('Game');
 
+    });
+    this.addMenuOption('Exit Game', function() {
 
-    }, this);
+      this.game.state.start('Game');
 
+    });
 
-
-
-    this.player = this.add.sprite(this.game.width/2,this.game.height-50  , 'player');
-    this.player.anchor.setTo(0.5);
-    this.player.scale.setTo(0.8);
+    //this.player = this.add.sprite(this.game.width/2,this.game.height-50  , 'player');
+    //this.player.anchor.setTo(0.5);
+    //this.player.scale.setTo(0.8);
 
     //this.player.animations.add('fly', [0,1,2,3,2,1]);
     //this.player.animations.play('fly', 8, true);
@@ -65,9 +83,9 @@ IlioLostInSpace.MainMenu.prototype = {
 
   },
   update: function() {
-    if(this.game.input.activePointer.justPressed()) {
-      this.game.state.start('Game');
-    }
+    //if(this.game.input.activePointer.justPressed()) {
+    //  this.game.state.start('Game');
+    //}
     //this.backGroundScroller(80);
 
     if (this.game.device.desktop) {

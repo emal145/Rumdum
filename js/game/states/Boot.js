@@ -4,9 +4,14 @@ var IlioLostInSpace = function() {};
 IlioLostInSpace.Boot = function() {};
 
 IlioLostInSpace.Boot.prototype = {
-  preload: function() {
+
+  loadImages: function () {
     this.load.image('logo', 'assets/images/logo.png');
     this.load.image('preloadbar', 'assets/images/loadbar.png');
+
+  },
+  preload: function() {
+   this.loadImages();
   },
   create: function() {
     this.game.stage.backgroundColor = '#80D2ED';
