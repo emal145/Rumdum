@@ -14,20 +14,27 @@ IlioLostInSpace.Game = function() {
   this.coinSpawnX = null;
   this.coinSpacingX = 10;
   this.coinSpacingY = 10;
+  this.startBgVisible = true;
+  this.backgroundMax = 5;
+    this.backgroundCounter = 0;
+    this.levelstage = 1;
+    this.changeBackground = false;
 };
 
 IlioLostInSpace.Game.prototype = {
   create: function() {
 
     this.game.world.bound = new Phaser.Rectangle(0,0, this.game.width + 300, this.game.height);
-    this.backgroundMenue = this.game.add.tileSprite(0, 0, this.game.width, 512, 'backgroundMenue');
-    this.backgroundMenue.autoScroll(-100, 0);
+    this.backgroundMenue = this.game.add.tileSprite(0, 0, this.game.width, 600, 'menueBackground');
+    //this.backgroundMenue.autoScroll(-100, 0);
+      this.levelBackground = this.game.add.tileSprite(0, -1200, this.game.width, 1200, 'level1');
+      this.levelBackgroundInverse = this.game.add.tileSprite(0, -2400, this.game.width, 1200, 'level1');
 
-    this.foreground = this.game.add.tileSprite(0, 470, this.game.width, this.game.height - 533, 'foreground');
-    this.foreground.autoScroll(-100,0);
+    //this.foreground = this.game.add.tileSprite(0, 470, this.game.width, this.game.height - 533, 'foreground');
+    //this.foreground.autoScroll(-100,0);
 
-    this.ground = this.game.add.tileSprite(0, this.game.height - 73, this.game.width, 73, 'ground');
-    this.ground.autoScroll(-400, 0);
+      //this.ground = this.game.add.tileSprite(0, this.game.height - 73, this.game.width, 73, 'ground');
+   // this.ground.autoScroll(-400, 0);
 
     this.player = this.add.sprite(200, this.game.height/2, 'player');
     this.player.anchor.setTo(0.5);
@@ -39,9 +46,9 @@ IlioLostInSpace.Game.prototype = {
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
     this.game.physics.arcade.gravity.y = 400;
 
-    this.game.physics.arcade.enableBody(this.ground);
-    this.ground.body.allowGravity = false;
-    this.ground.body.immovable = true;
+    //this.game.physics.arcade.enableBody(this.ground);
+    //this.ground.body.allowGravity = false;
+    //this.ground.body.immovable = true;
 
     this.game.physics.arcade.enableBody(this.player);
     this.player.body.collideWorldBounds = true;
@@ -61,7 +68,9 @@ IlioLostInSpace.Game.prototype = {
     this.coinSpawnX = this.game.width + 64;
 },
   update: function() {
-    if(this.game.input.activePointer.isDown) {
+      this.scrollBackground(50);
+
+      if(this.game.input.activePointer.isDown) {
       this.player.body.velocity.y -= 25;
       if(!this.jetSound.isPlaying) {
         this.jetSound.play('', 0, true, 0.5);
@@ -88,13 +97,13 @@ IlioLostInSpace.Game.prototype = {
       this.coinTimer = this.game.time.now + this.coinRate;
     }
 
-    if(this.enemyTimer < this.game.time.now) {
+    /*if(this.enemyTimer < this.game.time.now) {
       this.createEnemy();
       this.enemyTimer = this.game.time.now + this.enemyRate;
-    }
+    }*/
 
 
-    this.game.physics.arcade.collide(this.player, this.ground, this.groundHit, null, this);
+   // this.game.physics.arcade.collide(this.player, this.ground, this.groundHit, null, this);
     this.game.physics.arcade.overlap(this.player, this.coins, this.coinHit, null, this);
     this.game.physics.arcade.overlap(this.player, this.enemies, this.enemyHit, null, this);
 
@@ -108,7 +117,7 @@ IlioLostInSpace.Game.prototype = {
   },
   createCoin: function() {
     var x = this.game.width;
-    var y = this.game.rnd.integerInRange(50, this.game.world.height - 192);
+    var y = this.game.rnd.integerInRange(this.game.world.width - 192, 50);
 
     var coin = this.coins.getFirstExists(false);
     if(!coin) {
@@ -191,9 +200,11 @@ IlioLostInSpace.Game.prototype = {
     enemy.reset(x, y);
     enemy.revive();
   },
-  groundHit: function(player, ground) {
+
+    /*groundHit: function(player, ground) {
     player.body.velocity.y = -200;
-  },
+  },*/
+
   coinHit: function(player, coin) {
     this.score++;
     this.coinSound.play();
@@ -219,9 +230,9 @@ IlioLostInSpace.Game.prototype = {
     this.deathSound.play();
     this.gameMusic.stop();
     
-    this.ground.stopScroll();
+    //this.ground.stopScroll();
     this.backgroundMenue.stopScroll();
-    this.foreground.stopScroll();
+    //this.foreground.stopScroll();
 
     this.enemies.setAll('body.velocity.x', 0);
     this.coins.setAll('body.velocity.x', 0);
@@ -231,5 +242,61 @@ IlioLostInSpace.Game.prototype = {
 
     var scoreboard = new Scoreboard(this.game);
     scoreboard.show(this.score);
+  },
+
+  scrollBackground: function(speed) {
+    var distance = speed * 0.2;
+
+
+  //Startbackground solange rausscrollen bis es aus der Sicht entfernt ist
+  if(this.startBgVisible == true){
+    this.backgroundMenue.y += distance;
+    if(this.backgroundMenue.y >= 600){
+      this.startBgVisible = false;
+
+    }
   }
+
+    //Level Backgroud scrollen
+    this.levelBackground.y += distance;
+    this.levelBackgroundInverse.y += distance;
+
+    if (this.levelBackground.y >= this.game.height) {
+        //Wiederholungen des Hintergrundlevels mitzählen
+        this.backgroundCounter++;
+        //Wenn max Anzahl an Wiederholungen erreicht, Level - Bild auswechseln
+        if(this.backgroundCounter == this.backgroundMax){
+            //Nächstes Level
+            this.levelstage++;
+            this.levelBackground = this.game.add.tileSprite(0, (this.game.width-this.levelBackground.y)-1800, this.game.width, 1200, this.getLevelStage());
+            this.levelBackgroundInverse.z = -1;
+            this.changeBackground = true;
+        }
+        else{
+            //Background wieder auf die startposition zurücksetzen
+            this.levelBackground.y = (this.game.width-this.levelBackground.y)-1800;
+        }
+    }
+    if (this.levelBackgroundInverse.y >= this.game.height) {
+        //Background wieder auf die startposition zurücksetzen
+        if(this.changeBackground == true){
+            this.levelBackgroundInverse = this.game.add.tileSprite(0, (this.game.width-this.levelBackgroundInverse.y)-1800, this.game.width, 1200, this.getLevelStage());
+            this.levelBackgroundInverse.z = -1;
+            this.changeBackground = false;
+
+        }else{
+            this.levelBackgroundInverse.y = (this.game.width-this.levelBackgroundInverse.y)-1800;
+
+        }
+    }
+  },
+
+    getLevelStage: function(){
+        switch (this.levelstage){
+            case 2: return 'level2';
+            case 3: return 'level3';
+            case 4: return 'level4';
+        }
+    }
+
 };

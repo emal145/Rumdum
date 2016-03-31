@@ -51,11 +51,37 @@ IlioLostInSpace.Preload.prototype = {
 
     this.load.setPreloadSprite(this.preloadBar,0);
 
+<<<<<<< Updated upstream
    this.loadImages();
     this.loadSprites();
     this.loadAudio();
     this.loadFonts();
     this.loadScripts();
+=======
+    //Startbild
+    this.load.image('menueBackground', 'assets/images/background/backgroundMenue.png');
+    this.load.image('menueStartButton', 'assets/images/startButton.png');
+    this.load.image('menueHighscoreButton', 'assets/images/highscoreButton.png');
+    this.load.image('menueExitButton', 'assets/images/exitButton.png');
+
+    //Landschaft
+    this.load.image('level1', 'assets/images/background/level1.png');
+
+    this.load.image('level2', 'assets/images/background/level2.png');
+
+
+    this.load.spritesheet('coins', 'assets/images/coins-ps.png', 51, 51, 7);
+    this.load.spritesheet('player', 'assets/images/player.png', 100, 100, 16);
+    this.load.spritesheet('missile', 'assets/images/missiles-ps.png', 361, 218, 4);
+
+    this.load.audio('gameMusic', ['assets/audio/Pamgaea.mp3', 'assets/audio/Pamgaea.ogg']);
+    this.load.audio('rocket', 'assets/audio/rocket.wav');
+    this.load.audio('bounce', 'assets/audio/bounce.wav');
+    this.load.audio('coin', 'assets/audio/coin.wav');
+    this.load.audio('death', 'assets/audio/death.wav');
+
+    this.load.bitmapFont('minecraftia', 'assets/fonts/minecraftia/minecraftia.png', 'assets/fonts/minecraftia/minecraftia.xml');
+>>>>>>> Stashed changes
 
     this.load.onLoadComplete.add(this.onLoadComplete, this);
   },
