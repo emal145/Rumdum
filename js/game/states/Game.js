@@ -15,7 +15,7 @@ IlioLostInSpace.Game = function() {
   this.coinSpacingX = 10;
   this.coinSpacingY = 10;
   this.startBgVisible = true;
-  this.backgroundMax = 5;
+  this.backgroundMax = 2;
     this.backgroundCounter = 0;
     this.levelstage = 1;
     this.changeBackground = false;
@@ -273,9 +273,12 @@ IlioLostInSpace.Game.prototype = {
         if(this.backgroundCounter == this.backgroundMax){
             //Nächstes Level
             this.levelstage++;
-            this.levelBackground = this.game.add.tileSprite(0, (this.game.width-this.levelBackground.y)-1800, this.game.width, 1200, this.getLevelStage());
+            this.levelBackground.kill();
+            this.levelBackground = this.game.add.sprite(0, (this.game.height-this.levelBackground.y)-1800, this.game.width, 1200, this.getLevelStage());
             this.levelBackgroundInverse.z = -1;
             this.changeBackground = true;
+            this.backgroundCounter = 0;
+
         }
         else{
             //Background wieder auf die startposition zurücksetzen
@@ -285,7 +288,7 @@ IlioLostInSpace.Game.prototype = {
     if (this.levelBackgroundInverse.y >= this.game.height) {
         //Background wieder auf die startposition zurücksetzen
         if(this.changeBackground == true){
-            this.levelBackgroundInverse = this.game.add.tileSprite(0, (this.game.width-this.levelBackgroundInverse.y)-1800, this.game.width, 1200, this.getLevelStage());
+            this.levelBackgroundInverse = this.game.add.tileSprite(0, (this.game.height-this.levelBackgroundInverse.y)-1800, this.game.width, 1200, this.getLevelStage());
             this.levelBackgroundInverse.z = -1;
             this.changeBackground = false;
 
