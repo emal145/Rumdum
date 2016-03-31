@@ -25,12 +25,17 @@ IlioLostInSpace.Game.prototype = {
   create: function() {
 
     this.game.world.bound = new Phaser.Rectangle(0,0, this.game.width + 300, this.game.height);
-    this.backgroundMenue = this.game.add.tileSprite(0, 0, this.game.width, 600, 'menueBackground');
+    this.backgroundMenue = this.game.add.sprite(0, 0, 'menueBackground');
+    this.backgroundMenue.height = this.game.height;
+      this.backgroundMenue.width = this.game.width;
     //this.backgroundMenue.autoScroll(-100, 0);
-      this.levelBackground = this.game.add.tileSprite(0, -1200, this.game.width, 1200, 'level1');
-      this.levelBackgroundInverse = this.game.add.tileSprite(0, -2400, this.game.width, 1200, 'level1');
+      this.levelBackground = this.game.add.sprite(0, -1200, 'level1');
+      this.levelBackground.width = this.game.width;
+      this.levelBackgroundInverse = this.game.add.sprite(0, -2400, 'level1');
+      this.levelBackgroundInverse.width = this.game.width;
 
-    //this.foreground = this.game.add.tileSprite(0, 470, this.game.width, this.game.height - 533, 'foreground');
+
+      //this.foreground = this.game.add.tileSprite(0, 470, this.game.width, this.game.height - 533, 'foreground');
     //this.foreground.autoScroll(-100,0);
 
       //this.ground = this.game.add.tileSprite(0, this.game.height - 73, this.game.width, 73, 'ground');

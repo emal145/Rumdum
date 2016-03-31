@@ -60,7 +60,7 @@ IlioLostInSpace.Preload.prototype = {
     this.loadAudio();
     this.loadFonts();
     this.loadScripts();
-      
+
     this.load.bitmapFont('minecraftia', 'assets/fonts/minecraftia/minecraftia.png', 'assets/fonts/minecraftia/minecraftia.xml');
 
 
