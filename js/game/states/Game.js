@@ -25,14 +25,16 @@ IlioLostInSpace.Game.prototype = {
   create: function() {
 
     this.game.world.bound = new Phaser.Rectangle(0,0, this.game.width + 300, this.game.height);
-    this.backgroundMenue = this.game.add.sprite(0, 0, 'menueBackground');
-    this.backgroundMenue.height = this.game.height;
-      this.backgroundMenue.width = this.game.width;
+    //this.backgroundMenue = this.game.add.sprite(0, 0, 'menueBackground');
+    //this.backgroundMenue.height = this.game.height;
+    //  this.backgroundMenue.width = this.game.width;
     //this.backgroundMenue.autoScroll(-100, 0);
-      this.levelBackground = this.game.add.sprite(0, -1200, 'level1');
-      this.levelBackground.width = this.game.width;
-      this.levelBackgroundInverse = this.game.add.sprite(0, -2400, 'level1');
-      this.levelBackgroundInverse.width = this.game.width;
+    //  this.levelBackground = this.game.add.sprite(0, -1200, 'level1');
+    //  this.levelBackground.width = this.game.width;
+    //  this.levelBackgroundInverse = this.game.add.sprite(0, -2400, 'level1');
+    //  this.levelBackgroundInverse.width = this.game.width;
+    this.backgroundTile = this.game.add.tileSprite(0,this.game.height - 9000,this.game.width,9000,'backgroundTile');
+    //this.backgroundTile.x = this.game.width;
 
 
       //this.foreground = this.game.add.tileSprite(0, 470, this.game.width, this.game.height - 533, 'foreground');
@@ -73,7 +75,7 @@ IlioLostInSpace.Game.prototype = {
     this.coinSpawnX = this.game.width + 64;
 },
   update: function() {
-      this.scrollBackground(50);
+      this.scrollBackground();
 
       if(this.game.input.activePointer.isDown) {
       this.player.body.velocity.y -= 25;
@@ -249,60 +251,66 @@ IlioLostInSpace.Game.prototype = {
     scoreboard.show(this.score);
   },
 
-  scrollBackground: function(speed) {
-    var distance = speed * 0.2;
+  scrollBackground: function() {
+    //var distance = speed * 0.2;
 
+
+    this.backgroundTile.tilePosition.y += 4;
+    console.log(this.backgroundTile.tilePosition.y);
+    if (this.backgroundTile.tilePosition.y > 2400) {
+      this.backgroundTile.tilePosition.y = 1800;
+    }
 
   //Startbackground solange rausscrollen bis es aus der Sicht entfernt ist
-  if(this.startBgVisible == true){
-    this.backgroundMenue.y += distance;
-    if(this.backgroundMenue.y >= 600){
-      this.startBgVisible = false;
-
-    }
-  }
-
-    //Level Backgroud scrollen
-    this.levelBackground.y += distance;
-    this.levelBackgroundInverse.y += distance;
-
-    if (this.levelBackground.y >= this.game.height) {
-        //Wiederholungen des Hintergrundlevels mitzählen
-        this.backgroundCounter++;
-        //Wenn max Anzahl an Wiederholungen erreicht, Level - Bild auswechseln
-        if(this.backgroundCounter == this.backgroundMax){
-            //Nächstes Level
-            this.levelstage++;
-            this.levelBackground.kill();
-            this.levelBackground = this.game.add.sprite(this.game.width, 1200, this.getLevelStage());
-            this.levelBackgroundInverse.z = -1;
-            this.changeBackground = true;
-            this.backgroundCounter = 0;
-
-        }
-            //Background wieder auf die startposition zurücksetzen
-            this.levelBackground.y = (this.game.width-this.levelBackground.y)-1800;
-    }
-    if (this.levelBackgroundInverse.y >= this.game.height) {
-        //Background wieder auf die startposition zurücksetzen
-        if(this.changeBackground == true){
-            this.levelBackgroundInverse = this.game.add.tileSprite(this.game.width, 1200, this.getLevelStage());
-            this.levelBackgroundInverse.z = -1;
-            this.changeBackground = false;
-
-        }
-
-            this.levelBackgroundInverse.y = (this.game.width-this.levelBackgroundInverse.y)-1800;
-
-    }
-  },
-
-    getLevelStage: function(){
-        switch (this.levelstage){
-            case 2: return 'level2';
-            case 3: return 'level3';
-            case 4: return 'level4';
-        }
+  //if(this.startBgVisible == true){
+  //  this.backgroundMenue.y += distance;
+  //  if(this.backgroundMenue.y >= 600){
+  //    this.startBgVisible = false;
+  //
+  //  }
+  //}
+  //
+  //  //Level Backgroud scrollen
+  //  this.levelBackground.y += distance;
+  //  this.levelBackgroundInverse.y += distance;
+  //
+  //  if (this.levelBackground.y >= this.game.height) {
+  //      //Wiederholungen des Hintergrundlevels mitzählen
+  //      this.backgroundCounter++;
+  //      //Wenn max Anzahl an Wiederholungen erreicht, Level - Bild auswechseln
+  //      if(this.backgroundCounter == this.backgroundMax){
+  //          //Nächstes Level
+  //          this.levelstage++;
+  //          this.levelBackground.kill();
+  //          this.levelBackground = this.game.add.sprite(this.game.width, 1200, this.getLevelStage());
+  //          this.levelBackgroundInverse.z = -1;
+  //          this.changeBackground = true;
+  //          this.backgroundCounter = 0;
+  //
+  //      }
+  //          //Background wieder auf die startposition zurücksetzen
+  //          this.levelBackground.y = (this.game.width-this.levelBackground.y)-1800;
+  //  }
+  //  if (this.levelBackgroundInverse.y >= this.game.height) {
+  //      //Background wieder auf die startposition zurücksetzen
+  //      if(this.changeBackground == true){
+  //          this.levelBackgroundInverse = this.game.add.tileSprite(this.game.width, 1200, this.getLevelStage());
+  //          this.levelBackgroundInverse.z = -1;
+  //          this.changeBackground = false;
+  //
+  //      }
+  //
+  //          this.levelBackgroundInverse.y = (this.game.width-this.levelBackgroundInverse.y)-1800;
+  //
+  //  }
+  //},
+  //
+  //  getLevelStage: function(){
+  //      switch (this.levelstage){
+  //          case 2: return 'level2';
+  //          case 3: return 'level3';
+  //          case 4: return 'level4';
+  //      }
     }
 
 };
