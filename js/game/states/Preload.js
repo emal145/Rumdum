@@ -28,6 +28,7 @@ IlioLostInSpace.Preload.prototype = {
   loadAudio: function() {
 
       this.load.audio('gameMusic', ['assets/audio/Pamgaea.mp3', 'assets/audio/Pamgaea.ogg']);
+      this.load.audio('titleMusic', 'assets/audio/menuMusic.wav');
       this.load.audio('rocket', 'assets/audio/rocket.wav');
       this.load.audio('bounce', 'assets/audio/bounce.wav');
       this.load.audio('coin', 'assets/audio/coin.wav');

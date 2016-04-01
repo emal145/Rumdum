@@ -4,19 +4,19 @@ IlioLostInSpace.MainMenu = function() {};
 IlioLostInSpace.MainMenu.prototype = {
 
   addMenuOption: function(text, callback) {
-    var optionStyle = { font: '30pt TheMinion', fill: 'black', align: 'left', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
+    var optionStyle = { font: '30pt TheMinion', fill: 'red', align: 'left', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
     var txt = game.add.text(game.world.centerX, (this.optionCount * 100) + 200, text, optionStyle);
     txt.anchor.setTo(0.5);
-    txt.stroke = "rgba(0,0,0,0";
-    txt.strokeThickness = 4;
+    txt.stroke = "black";
+    txt.strokeThickness = 12;
     var onOver = function (target) {
       target.fill = "#FEFFD5";
       target.stroke = "rgba(200,200,200,0.5)";
       txt.useHandCursor = true;
     };
     var onOut = function (target) {
-      target.fill = "black";
-      target.stroke = "rgba(0,0,0,0)";
+      target.fill = "red";
+      target.stroke = "black";
       txt.useHandCursor = false;
     };
     //txt.useHandCursor = true;
@@ -40,12 +40,14 @@ IlioLostInSpace.MainMenu.prototype = {
     //this.backgroundMenue = this.game.add.tileSprite(0, this.game.height-600, 600, 600, 'backgroundMenue');
     //Hintergrundbild f�r das Men� wird geladen und an die H�he und Breite des Spielfensters angepasst
 
-
+    this.titleMusic = this.game.add.audio('titleMusic');
+    this.titleMusic.play('',0,1,true,true);
     //this.ground = this.game.add.tileSprite(0, this.game.height - 73, this.game.width, 73, 'ground');
     //this.ground.autoScroll(-400, 0);
     this.addMenuOption('Start Game', function() {
 
       this.game.state.start('Game');
+      this.titleMusic.stop();
 
     });
     this.addMenuOption('Highscore', function() {
@@ -71,6 +73,8 @@ IlioLostInSpace.MainMenu.prototype = {
     this.menuTitle = this.add.sprite(this.game.world.centerX, this.game.world.centerY - 300, 'logo');
     this.menuTitle.anchor.setTo(0.5);
     this.menuTitle.scale.setTo(0.5);
+
+
 
 
     //this.startText = this.game.add.bitmapText(0,0, 'minecraftia', 'tap to start', 32);
