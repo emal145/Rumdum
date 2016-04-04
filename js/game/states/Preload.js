@@ -35,6 +35,7 @@ IlioLostInSpace.Preload.prototype = {
   },
   loadSprites: function() {
       this.load.spritesheet('coins', 'assets/images/coins-ps.png', 51, 51, 7);
+      this.load.spritesheet('balloons', 'assets/images/baloons.png', 100, 200, 12);
       this.load.spritesheet('player', 'assets/images/player.png', 100, 100, 16);
       this.load.spritesheet('missile', 'assets/images/missiles-ps.png', 361, 218, 4);
   },

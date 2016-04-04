@@ -1,11 +1,14 @@
 IlioLostInSpace.Game = function() {
   this.playerMinAngle = -20;
   this.playerMaxAngle = 20;
-  
-  this.coinRate = 1000;
-  this.coinTimer = 0;
 
-  this.enemyRate = 500;
+    this.coinRate = 1000;
+    this.coinTimer = 0;
+
+    this.balloonRate = 600;
+    this.balloonTimer = 0;
+
+    this.enemyRate = 500;
   this.enemyTimer = 0;
 
   this.score = 0;
@@ -31,10 +34,14 @@ IlioLostInSpace.Game.prototype = {
     this.player.anchor.setTo(0.5);
     this.player.scale.setTo(0.3);
 
-    this.player.animations.add('fly', [0,1,2,3,2,1]);
+    this.player.animations.add('fly', [4]);
     this.player.animations.play('fly', 8, true);
 
-    this.game.physics.startSystem(Phaser.Physics.ARCADE);
+      this.player.animations.add('flyLeft', [2]);
+
+      this.player.animations.add('flyRight', [1]);
+
+      this.game.physics.startSystem(Phaser.Physics.ARCADE);
     this.game.physics.arcade.gravity.y = 400;
 
     //this.game.physics.arcade.enableBody(this.ground);
@@ -45,8 +52,9 @@ IlioLostInSpace.Game.prototype = {
     this.player.body.collideWorldBounds = true;
     this.player.body.bounce.set(0.25);
 
-    this.coins = this.game.add.group();
-    this.enemies = this.game.add.group();
+      this.coins = this.game.add.group();
+      this.balloons = this.game.add.group();
+      this.enemies = this.game.add.group();
 
     this.scoreText = this.game.add.bitmapText(10,10, 'minecraftia', 'Score: 0', 24);
 
@@ -83,21 +91,29 @@ IlioLostInSpace.Game.prototype = {
       }
     }
 
-    if(this.coinTimer < this.game.time.now) {
-        this.generateCoins();
-        this.generateCoins();
-        this.coinTimer = this.game.time.now + this.coinRate;
-    }
+      if(this.coinTimer < this.game.time.now) {
+          this.generateCoins();
+          this.generateCoins();
+          this.coinTimer = this.game.time.now + this.coinRate;
+      }
 
-    /*if(this.enemyTimer < this.game.time.now) {
-      this.createEnemy();
-      this.enemyTimer = this.game.time.now + this.enemyRate;
-    }*/
+      if(this.balloonTimer < this.game.time.now) {
+          this.generateBalloon();
+          this.generateBalloon();
+          this.balloonTimer = this.game.time.now + this.balloonRate;
+      }
+
+
+      /*if(this.enemyTimer < this.game.time.now) {
+        this.createEnemy();
+        this.enemyTimer = this.game.time.now + this.enemyRate;
+      }*/
 
 
    // this.game.physics.arcade.collide(this.player, this.ground, this.groundHit, null, this);
-    this.game.physics.arcade.overlap(this.player, this.coins, this.coinHit, null, this);
-    this.game.physics.arcade.overlap(this.player, this.enemies, this.enemyHit, null, this);
+      this.game.physics.arcade.overlap(this.player, this.coins, this.coinHit, null, this);
+      this.game.physics.arcade.overlap(this.player, this.balloons, this.balloonHit, null, this);
+      this.game.physics.arcade.overlap(this.player, this.enemies, this.enemyHit, null, this);
 
   },
   shutdown: function() {
@@ -107,6 +123,67 @@ IlioLostInSpace.Game.prototype = {
     this.coinTimer = 0;
     this.enemyTimer = 0;
   },
+    createBalloon: function(color) {
+        var x = this.game.rnd.integerInRange(this.game.world.height - 50, 50);
+        var y = 0;
+
+        var balloon = this.coins.getFirstExists(false);
+        if(!balloon) {
+            balloon = new Balloon(this.game, 0, 0, color);
+            this.balloons.add(balloon);
+        }
+
+        balloon.reset(x, y);
+        balloon.revive();
+        return balloon;
+    },
+
+    generateBalloon: function() {
+        if(!this.previousBalloonType || this.previousBalloonType < 3) {
+            var balloonType = this.game.rnd.integer() % 6;
+            switch(balloonType) {
+                case 0:
+                    //do nothing. No coins generated
+                    break;
+                case 1:
+                case 2:
+                    // if the cointype is 1 or 2, create a single coin
+                    //this.createCoin();
+                    this.createBalloon('red');
+
+                    break;
+                case 3:
+                    // create a small group of coins
+                    this.createBalloon('blue')
+                    break;
+                case 4:
+                    //create a large coin group
+                    this.createBalloon('green');
+                    break;
+                case 5:
+                    //create a large coin group
+                    this.createBalloon('yellow');
+                    break;
+
+                default:
+                    // if somehow we error on the cointype, set the previouscointype to zero and do nothing
+                    this.previousBalloonType = 0;
+                    break;
+            }
+
+            this.previousBalloonType = balloonType;
+        } else {
+            if(this.previousBalloonType === 4) {
+                // the previous coin generated was a large group,
+                // skip the next generation as well
+                this.previousBalloonType = 3;
+            } else {
+                this.previousBalloonType = 0;
+            }
+
+        }
+    },
+
   createCoin: function() {
     var x = this.game.rnd.integerInRange(this.game.world.height - 50, 50);
     var y = 0;
@@ -197,24 +274,42 @@ IlioLostInSpace.Game.prototype = {
     player.body.velocity.y = -200;
   },*/
 
-  coinHit: function(player, coin) {
-    this.score++;
-    this.coinSound.play();
-    coin.kill();
+    balloonHit: function(player, balloon) {
+        this.score++;
+        this.coinSound.play();
+        balloon.kill();
 
-    var dummyCoin = new Coin(this.game, coin.x, coin.y);
-    this.game.add.existing(dummyCoin);
+        var dummyBalloon = new Balloon(this.game, balloon.x, balloon.y);
+        this.game.add.existing(dummyBalloon);
 
-    dummyCoin.animations.play('spin', 40, true);
+        //dummyBalloon.animations.play('spin2', 3, true);
 
-    var scoreTween = this.game.add.tween(dummyCoin).to({x: 50, y: 50}, 300, Phaser.Easing.Linear.NONE, true);
+        var scoreTween = this.game.add.tween(dummyBalloon).to({x: balloon.x, y: balloon.y+50}, 300, Phaser.Easing.Linear.NONE, true);
 
-    scoreTween.onComplete.add(function() {
-      dummyCoin.destroy();
-      this.scoreText.text = 'Score: ' + this.score;
-    }, this);
+        scoreTween.onComplete.add(function() {
+            dummyBalloon.destroy();
+            this.scoreText.text = 'Score: ' + this.score;
+        }, this);
 
-  },
+    },
+    coinHit: function(player, coin) {
+        this.score++;
+        this.coinSound.play();
+        coin.kill();
+
+        var dummyCoin = new Coin(this.game, coin.x, coin.y);
+        this.game.add.existing(dummyCoin);
+
+        dummyCoin.animations.play('spin', 40, true);
+
+        var scoreTween = this.game.add.tween(dummyCoin).to({x: 50, y: 50}, 300, Phaser.Easing.Linear.NONE, true);
+
+        scoreTween.onComplete.add(function() {
+            dummyCoin.destroy();
+            this.scoreText.text = 'Score: ' + this.score;
+        }, this);
+
+    },
   enemyHit: function(player, enemy) {
     player.kill();
     enemy.kill();
@@ -243,8 +338,6 @@ IlioLostInSpace.Game.prototype = {
 
       this.backgroundTile.tilePosition.y += 4;
       if (this.backgroundTile.tilePosition.y >= 1800 - 4) {
-          var delta = this.backgroundTile.tilePosition.y
-          console.log(delta);
           this.backgroundTile.tilePosition.y = 600;
       }
 
