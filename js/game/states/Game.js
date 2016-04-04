@@ -27,12 +27,20 @@ IlioLostInSpace.Game = function() {
 IlioLostInSpace.Game.prototype = {
   create: function() {
 
+    this.upKey = game.input.keyboard.addKey(Phaser.Keyboard.UP);
+    this.downKey = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
+    this.leftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+    this.rightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+
     this.game.world.bound = new Phaser.Rectangle(0,0, this.game.width + 300, this.game.height);
       this.backgroundTile = this.game.add.tileSprite(0,this.game.height - 7200,this.game.width,7200,'backgroundTile');
+    //this.backgroundTile.tileScale.y = ((this.game.height * 12)-7200);
+
+
 
     this.player = this.add.sprite(200, this.game.height/2, 'player');
     this.player.anchor.setTo(0.5);
-    this.player.scale.setTo(0.3);
+    this.player.scale.setTo(0.5);
 
     this.player.animations.add('fly', [4]);
     this.player.animations.play('fly', 8, true);
@@ -42,7 +50,9 @@ IlioLostInSpace.Game.prototype = {
       this.player.animations.add('flyRight', [1]);
 
       this.game.physics.startSystem(Phaser.Physics.ARCADE);
-    this.game.physics.arcade.gravity.y = 400;
+    this.game.physics.arcade.gravity.y = -9.81;
+
+
 
     //this.game.physics.arcade.enableBody(this.ground);
     //this.ground.body.allowGravity = false;
@@ -50,7 +60,8 @@ IlioLostInSpace.Game.prototype = {
 
     this.game.physics.arcade.enableBody(this.player);
     this.player.body.collideWorldBounds = true;
-    this.player.body.bounce.set(0.25);
+    //this.player.body.velocity.y = -10;
+    //this.player.body.bounce.set(0.25);
 
       this.coins = this.game.add.group();
       this.balloons = this.game.add.group();
@@ -69,27 +80,36 @@ IlioLostInSpace.Game.prototype = {
   update: function() {
       this.scrollBackground();
 
-      if(this.game.input.activePointer.isDown) {
-      this.player.body.velocity.y -= 25;
-      if(!this.jetSound.isPlaying) {
-        this.jetSound.play('', 0, true, 0.5);
-      } 
-    } else {
-      this.jetSound.stop();
-    }
+      if(this.rightKey.isDown) {
+        this.player.body.velocity.x += 5;
+      }else if(this.leftKey.isDown) {
+        this.player.body.velocity.x -=5;
+      }else if (this.downKey.isDown) {
+        this.player.body.velocity.y ++;
 
-    if( this.player.body.velocity.y < 0 || this.game.input.activePointer.isDown) {
-      if(this.player.angle > 0) {
-        this.player.angle = 0;
       }
-      if(this.player.angle > this.playerMinAngle) {
-        this.player.angle -= 0.5;
-      }
-    } else if(this.player.body.velocity.y >=0 && !this.game.input.activePointer.idDown) {
-      if(this.player.angle < this.playerMaxAngle) {
-        this.player.angle += 0.5;
-      }
-    }
+
+    //if(this.upKey.isDown) {
+    //  this.player.body.velocity.y -= 25;
+    //  if(!this.jetSound.isPlaying) {
+    //    this.jetSound.play('', 0, true, 0.5);
+    //  }
+    //} else {
+    //  this.jetSound.stop();
+    //}
+
+    //if( this.player.body.velocity.y < 0 || this.upKey.isDown) {
+    //  if(this.player.angle > 0) {
+    //    this.player.angle = 0;
+    //  }
+    //  if(this.player.angle > this.playerMinAngle) {
+    //    this.player.angle -= 0.5;
+    //  }
+    //} else if(this.player.body.velocity.y >=0 && !this.game.input.activePointer.idDown) {
+    //  if(this.player.angle < this.playerMaxAngle) {
+    //    this.player.angle += 0.5;
+    //  }
+    //}
 
       if(this.coinTimer < this.game.time.now) {
           this.generateCoins();
@@ -279,14 +299,14 @@ IlioLostInSpace.Game.prototype = {
         this.coinSound.play();
         balloon.kill();
 
-        var dummyBalloon = new Balloon(this.game, balloon.x, balloon.y);
+        var dummyBalloon = new Balloon(this.game, balloon.x, balloon.y, balloon.color);
         this.game.add.existing(dummyBalloon);
 
         //dummyBalloon.animations.play('spin2', 3, true);
 
         var scoreTween = this.game.add.tween(dummyBalloon).to({x: balloon.x, y: balloon.y+50}, 300, Phaser.Easing.Linear.NONE, true);
 
-        scoreTween.onComplete.add(function() {
+      scoreTween.onComplete.add(function() {
             dummyBalloon.destroy();
             this.scoreText.text = 'Score: ' + this.score;
         }, this);
@@ -300,7 +320,7 @@ IlioLostInSpace.Game.prototype = {
         var dummyCoin = new Coin(this.game, coin.x, coin.y);
         this.game.add.existing(dummyCoin);
 
-        dummyCoin.animations.play('spin', 40, true);
+        dummyCoin.animations.play ('spin', 40, true);
 
         var scoreTween = this.game.add.tween(dummyCoin).to({x: 50, y: 50}, 300, Phaser.Easing.Linear.NONE, true);
 

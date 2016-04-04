@@ -70,7 +70,7 @@ IlioLostInSpace.MainMenu.prototype = {
 
     //this.game.add.tween(this.player).to({y: this.player.y - 16}, 500, Phaser.Easing.Linear.NONE, true, 0, Infinity, true);
 
-    this.menuTitle = this.add.sprite(this.game.world.centerX, this.game.world.centerY - 300, 'logo');
+    this.menuTitle = this.add.sprite(this.game.world.centerX, this.game.world.centerY - 200, 'logo');
     this.menuTitle.anchor.setTo(0.5);
     this.menuTitle.scale.setTo(0.5);
 
