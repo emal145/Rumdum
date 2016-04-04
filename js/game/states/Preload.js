@@ -20,9 +20,7 @@ IlioLostInSpace.Preload.prototype = {
     this.load.image('menueBackground', 'assets/images/background/backgroundMenue.png');
 
       //Landschaft
-      this.load.image('level1', 'assets/images/background/level1.png');
-      this.load.image('level2', 'assets/images/background/level2.png');
-      this.load.image('backgroundTile', 'assets/images/background.png');
+      this.load.image('backgroundTile', 'assets/images/background2.png');
 
   },
   loadAudio: function() {
