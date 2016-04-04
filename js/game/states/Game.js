@@ -79,15 +79,8 @@ IlioLostInSpace.Game.prototype = {
 },
   update: function() {
       this.scrollBackground();
+      this.movePlayer();
 
-      if(this.rightKey.isDown) {
-        this.player.body.velocity.x += 5;
-      }else if(this.leftKey.isDown) {
-        this.player.body.velocity.x -=5;
-      }else if (this.downKey.isDown) {
-        this.player.body.velocity.y ++;
-
-      }
 
     //if(this.upKey.isDown) {
     //  this.player.body.velocity.y -= 25;
@@ -360,6 +353,18 @@ IlioLostInSpace.Game.prototype = {
       if (this.backgroundTile.tilePosition.y >= 1800 - 4) {
           this.backgroundTile.tilePosition.y = 600;
       }
+
+  },
+  movePlayer: function() {
+
+    if(this.rightKey.isDown) {
+      this.player.body.velocity.x += 5;
+    }else if(this.leftKey.isDown) {
+      this.player.body.velocity.x -=5;
+    }else if (this.downKey.isDown) {
+      this.player.body.velocity.y ++;
+
+    }
 
   }
 
