@@ -25,6 +25,8 @@ IlioLostInSpace.Game = function() {
     this.playerColor = 'red';
     this.balloonSize = 5;
     this.speedFactor = 0.8;
+    this.filter;
+    this.spacedSprite;
 };
 
 IlioLostInSpace.Game.prototype = {
@@ -41,7 +43,6 @@ IlioLostInSpace.Game.prototype = {
       //this.backgroundTile.tileScale.y = ((this.game.height * 12)-7200);
 
 
-
     this.player = this.add.sprite(200, this.game.height/2, 'player');
     this.player.anchor.setTo(0.5);
     this.player.scale.setTo(0.5);
@@ -55,8 +56,6 @@ IlioLostInSpace.Game.prototype = {
 
       this.game.physics.startSystem(Phaser.Physics.ARCADE);
     //this.game.physics.arcade.gravity.y = 9.81;
-
-
 
     //this.game.physics.arcade.enableBody(this.ground);
     //this.ground.body.allowGravity = false;
@@ -80,7 +79,9 @@ IlioLostInSpace.Game.prototype = {
     this.gameMusic.play('', 0, true);
 
     this.coinSpawnY = this.game.height - 100;
-},
+      this.createFilter();
+      this.spacedSprite.isVisible = true;
+  },
   update: function() {
       this.scrollBackground();
       this.scrollCoins();
@@ -416,6 +417,101 @@ IlioLostInSpace.Game.prototype = {
         }
     }
 
-  }
+  },
+
+    createFilter: function(){
+    var fragmentRainbowSrc = [
+        "precision mediump float;",
+        "uniform vec2      resolution;",
+        "uniform float     time;",
+
+        "void main( void )",
+        "{",
+        "vec2 p = ( gl_FragCoord.xy / resolution.xy ) * 2.0 - 1.0;",
+
+        "vec3 c = vec3( 0.0 );",
+
+        "float amplitude = 0.50;",
+        "float glowT = sin(time) * 0.5 + 0.5;",
+        "float glowFactor = mix( 0.15, 0.35, glowT );",
+
+        "c += vec3(0.02, 0.03, 0.13) * ( glowFactor * abs( 1.0 / sin(p.x + sin( p.y + time ) * amplitude ) ));",
+        "c += vec3(0.02, 0.10, 0.03) * ( glowFactor * abs( 1.0 / sin(p.x + cos( p.y + time+1.00 ) * amplitude+0.1 ) ));",
+        "c += vec3(0.15, 0.05, 0.20) * ( glowFactor * abs( 1.0 / sin(p.y + sin( p.x + time+1.30 ) * amplitude+0.15 ) ));",
+        "c += vec3(0.20, 0.05, 0.05) * ( glowFactor * abs( 1.0 / sin(p.y + cos( p.x + time+3.00 ) * amplitude+0.3 ) ));",
+        "c += vec3(0.17, 0.17, 0.05) * ( glowFactor * abs( 1.0 / sin(p.y + cos( p.x + time+5.00 ) * amplitude+0.2 ) ));",
+
+        "gl_FragColor = vec4( c, 0.2);",
+        "}"
+    ];
+
+    var fragmentGalaxySrc = [
+
+        "precision mediump float;",
+
+        "uniform float     time;",
+        "uniform vec2      resolution;",
+        "uniform vec2      mouse;",
+
+        "// https://www.shadertoy.com/view/MdXSzS",
+
+        "void main()",
+        "{",
+        "vec2 uv = (gl_FragCoord.xy/resolution.xy)-.5;",
+
+        "float time = time * .1 + ((.25+.05*sin(time*.1))/(length(uv.xy)+.07))* 2.2;",
+        "float si = sin(time);",
+        "float co = cos(time);",
+        "mat2 ma = mat2(co, si, -si, co);",
+
+        "float c = 0.0;",
+        "float v1 = 0.0;",
+        "float v2 = 0.0;",
+
+        "for (int i = 0; i < 100; i++)",
+        "{",
+        "float s = float(i) * .035;",
+        "vec3 p = s * vec3(uv, 0.0);",
+        "p.xy *= ma;",
+        "p += vec3(.22,.3, s-1.5-sin(time*.13)*.1);",
+        "for (int i = 0; i < 8; i++)",
+        "{",
+        "p = abs(p) / dot(p,p) - 0.659;",
+        "}",
+        "v1 += dot(p,p)*.0015 * (1.8+sin(length(uv.xy*13.0)+.5-time*.2));",
+        "v2 += dot(p,p)*.0015 * (1.5+sin(length(uv.xy*13.5)+2.2-time*.3));",
+        "c = length(p.xy*.5) * .35;",
+        "}",
+
+        "float len = length(uv);",
+        "v1 *= smoothstep(.7, .0, len);",
+        "v2 *= smoothstep(.6, .0, len);",
+
+        "float re = clamp(c, 0.0, 1.0);",
+        "float gr = clamp((v1+c)*.25, 0.0, 1.0);",
+        "float bl = clamp(v2, 0.0, 1.0);",
+        "vec3 col = vec3(re, gr, bl) + smoothstep(0.15, .0, len) * .9;",
+
+        "gl_FragColor=vec4(col, 1.0);",
+        "}"
+    ];
+
+    this.filter = new Phaser.Filter(game, null, fragmentRainbowSrc);
+    this.filter.setResolution(600, 600);
+    this.spacedSprite = game.add.sprite();
+    game.physics.arcade.enable(this.spacedSprite);
+
+        this.spacedSprite.width = 600;
+        this.spacedSprite.height = 600;
+
+        this.spacedSprite.filters = [ this.filter ];
+    //spacedSprite.anchor.setTo(0.5, 0.5);
+    //game.add.tween(spacedSprite).to( { alpha: 1 }, 2000, Phaser.Easing.Linear.None, true, 0, 1000, true);
+
+
+        this.spacedSprite.filters = [ this.filter ];
+        this.spacedSprite.visible = false;
+
+}
 
 };
