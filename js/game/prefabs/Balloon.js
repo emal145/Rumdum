@@ -54,7 +54,7 @@ Balloon.prototype.constructor = Balloon;
 
 Balloon.prototype.onRevived = function() {
     //this.body.velocity.x = -400;
-    this.body.velocity.y = 400;
+    this.body.velocity.y = 60;
 
 };
 

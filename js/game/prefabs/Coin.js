@@ -8,7 +8,7 @@ var Coin = function(game, x, y, key, frame) {
   this.animations.add('spin');
 
   this.game.physics.arcade.enableBody(this);
-  this.body.allowGravity = false;
+  this.body.allowGravity = true;
 
   this.checkWorldBounds = true;
   this.onOutOfBoundsKill = true;
@@ -23,11 +23,12 @@ Coin.prototype.constructor = Coin;
 
 Coin.prototype.onRevived = function() {
   //this.body.velocity.x = -400;
-  this.body.velocity.y = 400;
+  this.body.velocity.y = 60;
   this.animations.play('spin', 10, true);
 };
 
 Coin.prototype.onKilled = function() {
   this.animations.frame = 0;
 };
+
 

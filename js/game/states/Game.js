@@ -17,11 +17,14 @@ IlioLostInSpace.Game = function() {
   this.coinSpawnY = null;
   this.coinSpacingX = 10;
   this.coinSpacingY = 10;
-  this.startBgVisible = true;
   this.backgroundMax = 2;
     this.backgroundCounter = 0;
     this.levelstage = 1;
     this.changeBackground = false;
+    this.gameSpeed = 2;
+    this.playerColor = 'red';
+    this.balloonSize = 5;
+    this.speedFactor = 0.8;
 };
 
 IlioLostInSpace.Game.prototype = {
@@ -30,11 +33,12 @@ IlioLostInSpace.Game.prototype = {
     this.upKey = game.input.keyboard.addKey(Phaser.Keyboard.UP);
     this.downKey = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
     this.leftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
-    this.rightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+      this.rightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+      this.spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
-    this.game.world.bound = new Phaser.Rectangle(0,0, this.game.width + 300, this.game.height);
+      this.game.world.bound = new Phaser.Rectangle(0,0, this.game.width + 300, this.game.height);
       this.backgroundTile = this.game.add.tileSprite(0,this.game.height - 7200,this.game.width,7200,'backgroundTile');
-    //this.backgroundTile.tileScale.y = ((this.game.height * 12)-7200);
+      //this.backgroundTile.tileScale.y = ((this.game.height * 12)-7200);
 
 
 
@@ -50,7 +54,7 @@ IlioLostInSpace.Game.prototype = {
       this.player.animations.add('flyRight', [1]);
 
       this.game.physics.startSystem(Phaser.Physics.ARCADE);
-    this.game.physics.arcade.gravity.y = -9.81;
+    //this.game.physics.arcade.gravity.y = 9.81;
 
 
 
@@ -59,7 +63,7 @@ IlioLostInSpace.Game.prototype = {
     //this.ground.body.immovable = true;
 
     this.game.physics.arcade.enableBody(this.player);
-    this.player.body.collideWorldBounds = true;
+      this.player.body.collideWorldBounds = true;
     //this.player.body.velocity.y = -10;
     //this.player.body.bounce.set(0.25);
 
@@ -79,30 +83,9 @@ IlioLostInSpace.Game.prototype = {
 },
   update: function() {
       this.scrollBackground();
+      this.scrollCoins();
+      this.scrollBalloons();
       this.movePlayer();
-
-
-    //if(this.upKey.isDown) {
-    //  this.player.body.velocity.y -= 25;
-    //  if(!this.jetSound.isPlaying) {
-    //    this.jetSound.play('', 0, true, 0.5);
-    //  }
-    //} else {
-    //  this.jetSound.stop();
-    //}
-
-    //if( this.player.body.velocity.y < 0 || this.upKey.isDown) {
-    //  if(this.player.angle > 0) {
-    //    this.player.angle = 0;
-    //  }
-    //  if(this.player.angle > this.playerMinAngle) {
-    //    this.player.angle -= 0.5;
-    //  }
-    //} else if(this.player.body.velocity.y >=0 && !this.game.input.activePointer.idDown) {
-    //  if(this.player.angle < this.playerMaxAngle) {
-    //    this.player.angle += 0.5;
-    //  }
-    //}
 
       if(this.coinTimer < this.game.time.now) {
           this.generateCoins();
@@ -267,6 +250,8 @@ IlioLostInSpace.Game.prototype = {
         coinColumnCounter = 0;
       } 
     }
+      this.game.physics.arcade.enableBody(coin);
+
   },
 
 
@@ -289,6 +274,24 @@ IlioLostInSpace.Game.prototype = {
 
     balloonHit: function(player, balloon) {
         this.score++;
+
+        if(balloon.color == this.playerColor){
+           this.gameSpeed += this.speedFactor;
+            this.balloonSize++;
+        }
+        else{
+            this.gameSpeed -= this.speedFactor;
+            this.balloonSize--;
+
+        }
+        if(this.balloonSize == 10){
+            //SPECIAL EFFEKT AUSLÖSEN
+        }
+        else if( this.balloonSize == 0){
+            enemyHit(player, null);
+        }
+
+
         this.coinSound.play();
         balloon.kill();
 
@@ -304,7 +307,7 @@ IlioLostInSpace.Game.prototype = {
             this.scoreText.text = 'Score: ' + this.score;
         }, this);
 
-    },
+      },
     coinHit: function(player, coin) {
         this.score++;
         this.coinSound.play();
@@ -324,46 +327,93 @@ IlioLostInSpace.Game.prototype = {
 
     },
   enemyHit: function(player, enemy) {
-    player.kill();
-    enemy.kill();
+      player.kill();
+      enemy.kill();
 
-    this.deathSound.play();
-    this.gameMusic.stop();
-    
-    //this.ground.stopScroll();
-    this.backgroundMenue.stopScroll();
-    //this.foreground.stopScroll();
+      this.deathSound.play();
+      this.gameMusic.stop();
 
-    this.enemies.setAll('body.velocity.x', 0);
-    this.coins.setAll('body.velocity.x', 0);
+      //this.ground.stopScroll();
+      this.backgroundMenue.stopScroll();
+      //this.foreground.stopScroll();
 
-    this.enemyTimer = Number.MAX_VALUE;
-    this.coinTimer = Number.MAX_VALUE;
+      this.enemies.setAll('body.velocity.x', 0);
+      this.coins.setAll('body.velocity.x', 0);
 
-    var scoreboard = new Scoreboard(this.game);
-    scoreboard.show(this.score);
+      this.enemyTimer = Number.MAX_VALUE;
+      this.coinTimer = Number.MAX_VALUE;
+
+      var scoreboard = new Scoreboard(this.game);
+      scoreboard.show(this.score);
   },
 
   scrollBackground: function() {
-      //var distance = speed * 0.2;
+      var ykoordinate = 0;
+      var ystartkoordinate = 0;
+      var bgSpeed = 4;
 
-      console.log("height: " + this.game.height);
-
-      this.backgroundTile.tilePosition.y += 4;
-      if (this.backgroundTile.tilePosition.y >= 1800 - 4) {
-          this.backgroundTile.tilePosition.y = 600;
+      switch (this.levelstage){
+          case 1: ykoordinate = 1800;
+                  ystartkoordinate = 600;
+              break;
+          case 2: ykoordinate = 4200;
+              ystartkoordinate = 3000;
+              break;
+          case 3: ykoordinate = 6600;
+              ystartkoordinate = 5400;
+              break;
+          default:
+              ykoordinate = 6600;
+              ystartkoordinate = 5400;
       }
 
+      this.backgroundTile.tilePosition.y += bgSpeed;
+
+          if (this.backgroundTile.tilePosition.y >= ykoordinate - bgSpeed) {
+              this.backgroundCounter++;
+              if (this.backgroundCounter == this.backgroundMax) {
+                  this.levelstage++;
+                  this.backgroundCounter = 0;
+              }
+              else {
+                  if (this.backgroundTile.tilePosition.y >= ykoordinate - bgSpeed) {
+                      this.backgroundTile.tilePosition.y = ystartkoordinate;
+                  }
+              }
+          }
   },
-  movePlayer: function() {
+
+    scrollCoins: function(){
+        this.coins.addAll('body.y', this.gameSpeed);
+    },
+
+    scrollBalloons: function(){
+        this.balloons.addAll('body.y', this.gameSpeed);
+    },
+
+
+    movePlayer: function() {
 
     if(this.rightKey.isDown) {
-      this.player.body.velocity.x += 5;
+      if(this.spaceKey.isDown){
+          this.player.body.x += 25;
+      }else {
+          this.player.body.x += 5;
+      }
     }else if(this.leftKey.isDown) {
-      this.player.body.velocity.x -=5;
+        if(this.spaceKey.isDown){
+            this.player.body.x -= 25;
+        }
+        else{
+            this.player.body.x -= 5;
+        }
     }else if (this.downKey.isDown) {
-      this.player.body.velocity.y ++;
-
+        if(this.spaceKey.isDown){
+            this.player.body.y += 25;
+        }
+        else{
+            this.player.body.y += 5;
+        }
     }
 
   }
