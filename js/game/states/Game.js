@@ -7,7 +7,8 @@ IlioLostInSpace.Game = function () {
 
     this.balloonRate = 900;
     this.balloonTimer = 0;
-    this.resizeRate = 1000;
+    this.resizeSize = 5.0;
+    this.resizeRate = 200;
     this.resizeTimer = 0;
     this.enemyRate = 500;
     this.enemyTimer = 0;
@@ -375,22 +376,20 @@ IlioLostInSpace.Game.prototype = {
             this.balloonSize--;
         }
 
+        this.resizeSize = parseFloat(this.balloonSize).toFixed(1);
         this.balloonRate = 100/this.gameSpeed*40;
         this.coinRate = 100/this.gameSpeed*40;
 
         if (this.balloonSize == 10) {
             //SPECIAL EFFEKT AUSLÖSEN
-            //this.balloons.addAll('body.velocity.y', 0);
-            //this.coins.addAll('body.velocity.y', 0);
             this.balloons.visible = false;
             this.coins.visible = false;
-           // this.gameSpeed = this.spacedUpSpeed;
             this.spacedUp = true;
             this.spacedSprite.visible = true;
             this.specialCoins.setAll('visible', true);
         }
-        else if (this.balloonSize == 0) {
-            enemyHit(player, null);
+        else if (this.balloonSize < 0) {
+            this.enemyHit(this.player, null);
         }
 
         this.resizeBalloon.scale.setTo(this.balloonSize/10);
@@ -506,9 +505,10 @@ IlioLostInSpace.Game.prototype = {
     },
 
     minimizeResizeBalloon: function(){
-        this.balloonSize--;
-        if(this.balloonSize >= 0) {
-            var newscale = this.balloonSize / 10;
+        this.resizeSize -= 0.1;
+        this.balloonSize = parseInt(this.resizeSize);
+        if(this.resizeSize >= 0) {
+            var newscale = this.resizeSize / 10;
             this.resizeBalloon.scale.set(newscale, newscale);
             this.resizeBalloon.x = (this.player.x + 10.5) - parseFloat(this.resizeBalloon.width / 2).toFixed(1);
             this.resizeBalloon.y = (this.player.y - 47) - this.resizeBalloon.height;
