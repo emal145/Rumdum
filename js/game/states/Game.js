@@ -1,143 +1,252 @@
-IlioLostInSpace.Game = function() {
-  this.playerMinAngle = -20;
-  this.playerMaxAngle = 20;
+IlioLostInSpace.Game = function () {
+    this.playerMinAngle = -20;
+    this.playerMaxAngle = 20;
 
-    this.coinRate = 1000;
+    this.coinRate = 900;
     this.coinTimer = 0;
-    this.score = 0;
-    this.balloonRate = 600;
+
+    this.balloonRate = 900;
     this.balloonTimer = 0;
 
     this.enemyRate = 500;
-  this.enemyTimer = 0;
+    this.enemyTimer = 0;
 
-  this.previousCoinType = null;
-    this.highscore = this.game.state.Highscore;
-  this.coinSpawnY = null;
-  this.coinSpacingX = 10;
-  this.coinSpacingY = 10;
-  this.startBgVisible = true;
-  this.backgroundMax = 2;
+    this.score = 0;
+    this.previousCoinType = null;
+    this.spacedUpSpeed = 13;
+    this.coinSpawnY = null;
+    this.coinSpacingX = 10;
+    this.coinSpacingY = 10;
+    this.backgroundMax = 5;
     this.backgroundCounter = 0;
     this.levelstage = 1;
-    this.changeBackground = false;
+    this.gameSpeed = 4.0;
+    this.playerColor = 'red';
+    this.balloonSize = 5;
+    this.speedFactor = 0.8;
+    this.filter;
+    this.spacedSprite;
+    this.spacedUpCount = 0;
+    this.spacedUp = false;
 };
 
 IlioLostInSpace.Game.prototype = {
+    create: function () {
+        this.game.world.bound = new Phaser.Rectangle(0, 0, this.game.width + 300, this.game.height);
+        this.initializeKeys();
+
+        this.addSprites();
+        this.createFilter();
+        this.spacedSprite.visible = false;
+
+        this.createPlayer();
+        this.createPlayerBalloon();
+
+        this.game.physics.startSystem(Phaser.Physics.ARCADE);
+        //this.game.physics.arcade.gravity.y = 9.81;
+
+        this.game.physics.arcade.enableBody(this.ground);
+        this.ground.body.allowGravity = false;
+        this.ground.body.immovable = true;
+
+        this.game.physics.arcade.enableBody(this.player);
+        this.player.body.collideWorldBounds = false;
+        //this.player.body.velocity.y = -10;
+        //this.player.body.bounce.set(0.25);
+        this.coins = this.game.add.group();
+        this.specialCoins = this.game.add.group();
+        this.balloons = this.game.add.group();
+        this.enemies = this.game.add.group();
+        this.scoreText = this.game.add.bitmapText(10, 10, 'minecraftia', 'Score: 0', 24);
+        this.jetSound = this.game.add.audio('rocket');
+        this.coinSound = this.game.add.audio('coin');
+        this.deathSound = this.game.add.audio('death');
+        this.gameMusic = this.game.add.audio('gameMusic');
+        this.gameMusic.play('', 0, true);
+
+        this.coinSpawnY = this.game.height - 100;
+
+        this.generateSpecialCoins();
+       // this.specialCoins.visible = false;
+    },
+    update: function () {
+        this.scrollBackground();
+        this.scrollCoins();
+        this.scrollBalloons();
+        this.movePlayer();
+        this.changePlayerColor();
+        if (this.spacedUp == false) {
+            if (this.coinTimer < this.game.time.now) {
+                this.generateCoins();
+                this.coinTimer = this.game.time.now + this.coinRate;
+            }
+
+            if (this.balloonTimer < this.game.time.now) {
+                this.generateBalloon();
+                this.balloonTimer = this.game.time.now + this.balloonRate;
+            }
+        }
+        else{
+            //SPECIAL COINS MUSTER GENERIEREN
+            this.scrollSpecialCoins();
+            /* if (this.coinTimer < this.game.time.now) {
+                   this.generateSpecialCoins();
+                   this.coinTimer = this.game.time.now + 75;
+               }
+               */
+        }
+
+        /*if(this.enemyTimer < this.game.time.now) {
+         this.createEnemy();
+         this.enemyTimer = this.game.time.now + this.enemyRate;
+         }*/
+
+        this.game.physics.arcade.overlap( this.ground, this.coins, this.groundHit, null, this);
+        this.game.physics.arcade.overlap(this.ground,this.balloons, this.balloonsGroundHit, null, this);
+        this.game.physics.arcade.overlap(this.ground, this.specialCoins, this.specialcoinGroundHit, null, this);
+        this.game.physics.arcade.overlap(this.resizeBalloon, this.coins, this.coinHit, null, this);
+        this.game.physics.arcade.overlap(this.resizeBalloon, this.balloons, this.balloonHit, null, this);
+        this.game.physics.arcade.overlap(this.player, this.coins, this.coinHit, null, this);
+        this.game.physics.arcade.overlap(this.player, this.specialCoins, this.specialcoinHit, null, this);
+        this.game.physics.arcade.overlap(this.player, this.balloons, this.balloonHit, null, this);
+        this.game.physics.arcade.overlap(this.player, this.enemies, this.enemyHit, null, this);
 
 
+        if (this.spacedUp == true) {
+            this.filter.update();
+        }
 
+    },
+    shutdown: function () {
+        this.coins.destroy();
+        this.enemies.destroy();
+        this.score = 0;
+        this.coinTimer = 0;
+        this.enemyTimer = 0;
+    },
 
-  create: function() {
-    this.high
-    this.upKey = game.input.keyboard.addKey(Phaser.Keyboard.UP);
-    this.downKey = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
-    this.leftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
-    this.rightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+    initializeKeys: function(){
+        //this.upKey = game.input.keyboard.addKey(Phaser.Keyboard.UP);
+        //this.downKey = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
+        this.leftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+        this.rightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+        this.spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        this.qKey = game.input.keyboard.addKey(Phaser.Keyboard.Q);
+        this.wKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
+        this.eKey = game.input.keyboard.addKey(Phaser.Keyboard.E);
+        this.rKey = game.input.keyboard.addKey(Phaser.Keyboard.R);
 
-    this.game.world.bound = new Phaser.Rectangle(0,0, this.game.width + 300, this.game.height);
-      this.backgroundTile = this.game.add.tileSprite(0,this.game.height - 7200,this.game.width,7200,'backgroundTile');
-    //this.backgroundTile.tileScale.y = ((this.game.height * 12)-7200);
+    },
 
+    addSprites: function(){
+        this.backgroundTile = this.game.add.tileSprite(0, this.game.height - 7200, this.game.width, 7200, 'backgroundTile');
+        this.ground = this.game.add.tileSprite( -100, this.game.height+15,this.game.width+200, 2, 'ground');
+        this.player = this.add.sprite(200, this.game.height / 2 + 150, 'player');
+        this.resizeBalloon = this.game.add.sprite(173, this.game.height/2-122+150, 'resizeBalloon');
+        this.resizeBalloonEnd = this.game.add.sprite(185, this.game.height/2-50+150, 'resizeBalloonEnd');
 
+    },
 
-    this.player = this.add.sprite(200, this.game.height/2, 'player');
-    this.player.anchor.setTo(0.5);
-    this.player.scale.setTo(0.5);
+    createPlayer: function(){
+        this.player.anchor.setTo(0.5);
+        this.player.scale.setTo(0.5);
 
-    this.player.animations.add('fly', [4]);
-    this.player.animations.play('fly', 8, true);
+        this.player.animations.add('flyRed', [3]);
+        this.player.animations.add('flyRedLeft', [2]);
+        this.player.animations.add('flyRedRight', [1]);
 
-      this.player.animations.add('flyLeft', [2]);
+        this.player.animations.add('flyBlue', [7]);
+        this.player.animations.add('flyBlueLeft', [6]);
+        this.player.animations.add('flyBlueRight', [5]);
 
-      this.player.animations.add('flyRight', [1]);
+        this.player.animations.add('flyGreen', [11]);
+        this.player.animations.add('flyGreenLeft', [10]);
+        this.player.animations.add('flyGreenRight', [9]);
 
-      this.game.physics.startSystem(Phaser.Physics.ARCADE);
-    this.game.physics.arcade.gravity.y = 5.81;
+        this.player.animations.add('flyYellow', [15]);
+        this.player.animations.add('flyYellowLeft', [14]);
+        this.player.animations.add('flyYellowRight', [13]);
 
+        this.player.animations.play('flyRed', 8, true);
 
+    },
 
-    //this.game.physics.arcade.enableBody(this.ground);
-    //this.ground.body.allowGravity = false;
-    //this.ground.body.immovable = true;
+    createPlayerBalloon: function(){
+        this.resizeBalloon.scale.set(0.5, 0.5);
+        //this.resizeBalloon.anchor.setTo(0.5,0.5);
+        this.resizeBalloon.animations.add('red', [0]);
+        this.resizeBalloon.animations.add('blue', [1]);
+        this.resizeBalloon.animations.add('yellow', [2]);
+        this.resizeBalloon.animations.add('green', [3]);
+        this.resizeBalloon.animations.play('red', 8, true);
 
-    this.game.physics.arcade.enableBody(this.player);
-    this.player.body.collideWorldBounds = true;
-    //this.player.body.velocity.y = -10;
-    //this.player.body.bounce.set(0.25);
+        this.resizeBalloonEnd.scale.set(0.7, 0.7);
+        this.resizeBalloonEnd.animations.add('red', [0]);
+        this.resizeBalloonEnd.animations.play('red', 8, true);
 
-      this.coins = this.game.add.group();
-      this.balloons = this.game.add.group();
-      this.enemies = this.game.add.group();
+        this.game.physics.arcade.enableBody(this.resizeBalloon);
+        this.game.physics.arcade.enableBody(this.resizeBalloonEnd);
+    },
 
-    this.scoreText = this.game.add.bitmapText(10,10, 'minecraftia', 'Score: 0', 24);
-
-    this.jetSound = this.game.add.audio('rocket');
-    this.coinSound = this.game.add.audio('coin');
-    this.deathSound = this.game.add.audio('death');
-    this.gameMusic = this.game.add.audio('gameMusic');
-    this.gameMusic.play('', 0, true);
-
-    this.coinSpawnY = this.game.height - 100;
-},
-  update: function() {
-      this.scrollBackground();
-      this.movePlayer();
-
-
-
-
-      if(this.coinTimer < this.game.time.now) {
-          this.generateCoins();
-          this.generateCoins();
-          this.coinTimer = this.game.time.now + this.coinRate;
-      }
-
-      if(this.balloonTimer < this.game.time.now) {
-          this.generateBalloon();
-          this.generateBalloon();
-          this.balloonTimer = this.game.time.now + this.balloonRate;
-      }
-
-
-      if(this.enemyTimer < this.game.time.now) {
-        this.createEnemy();
-        this.enemyTimer = this.game.time.now + this.enemyRate;
-      }
-
-
-   // this.game.physics.arcade.collide(this.player, this.ground, this.groundHit, null, this);
-      this.game.physics.arcade.overlap(this.player, this.coins, this.coinHit, null, this);
-      this.game.physics.arcade.overlap(this.player, this.balloons, this.balloonHit, null, this);
-      this.game.physics.arcade.overlap(this.player, this.enemies, this.enemyHit, null, this);
-
-  },
-  shutdown: function() {
-    this.coins.destroy();
-    this.enemies.destroy();
-    this.score = 0;
-    this.coinTimer = 0;
-    this.enemyTimer = 0;
-  },
-    createBalloon: function(color) {
+    createBalloon: function (color) {
         var x = this.game.rnd.integerInRange(this.game.world.height - 50, 50);
         var y = 0;
 
-        var balloon = this.coins.getFirstExists(false);
-        if(!balloon) {
+        var balloon = this.balloons.getFirstExists(false);
+        if (!balloon) {
             balloon = new Balloon(this.game, 0, 0, color);
             this.balloons.add(balloon);
         }
-
+        balloon.color = color;
         balloon.reset(x, y);
         balloon.revive();
         return balloon;
     },
 
-    generateBalloon: function() {
-        if(!this.previousBalloonType || this.previousBalloonType < 3) {
-            var balloonType = this.game.rnd.integer() % 6;
-            switch(balloonType) {
+    generateBalloon: function () {
+
+        var balloonType = this.game.rnd.integer() % 4;
+        switch (balloonType) {
+            case 0:
+                this.createBalloon('red');
+                break;
+            case 1:
+                // create a small group of coins
+                this.createBalloon('blue')
+                break;
+            case 2:
+                //create a large coin group
+                this.createBalloon('green');
+                break;
+            case 3:
+                //create a large coin group
+                this.createBalloon('yellow');
+                break;
+
+            default:
+                break;
+        }
+    },
+    createCoin: function () {
+        var x = this.game.rnd.integerInRange(this.game.world.height - 50, 50);
+        var y = 0;
+
+        var coin = this.coins.getFirstExists(false);
+
+        if (!coin) {
+            coin = new Coin(this.game, 0, 0);
+            this.coins.add(coin);
+            this.game.physics.arcade.enableBody(coin);
+        }
+
+        coin.reset(x, y);
+        coin.revive();
+        return coin;
+    },
+    generateCoins: function () {
+        if (!this.previousCoinType || this.previousCoinType < 3) {
+            var coinType = this.game.rnd.integer() % 5;
+            switch (coinType) {
                 case 0:
                     //do nothing. No coins generated
                     break;
@@ -145,208 +254,466 @@ IlioLostInSpace.Game.prototype = {
                 case 2:
                     // if the cointype is 1 or 2, create a single coin
                     //this.createCoin();
-                    this.createBalloon('red');
+                    this.createCoin();
 
                     break;
                 case 3:
                     // create a small group of coins
-                    this.createBalloon('blue')
+                    this.createCoinGroup(2, 2);
                     break;
                 case 4:
                     //create a large coin group
-                    this.createBalloon('green');
+                    this.createCoinGroup(6, 2);
                     break;
-                case 5:
-                    //create a large coin group
-                    this.createBalloon('yellow');
-                    break;
-
                 default:
                     // if somehow we error on the cointype, set the previouscointype to zero and do nothing
-                    this.previousBalloonType = 0;
+                    this.previousCoinType = 0;
                     break;
             }
 
-            this.previousBalloonType = balloonType;
+            this.previousCoinType = coinType;
         } else {
-            if(this.previousBalloonType === 4) {
+            if (this.previousCoinType === 4) {
                 // the previous coin generated was a large group,
                 // skip the next generation as well
-                this.previousBalloonType = 3;
+                this.previousCoinType = 3;
             } else {
-                this.previousBalloonType = 0;
+                this.previousCoinType = 0;
             }
 
         }
     },
 
-  createCoin: function() {
-    var x = this.game.rnd.integerInRange(this.game.world.height - 50, 50);
-    var y = 0;
+    generateSpecialCoins: function(){
+        var coinSpawnX = 0;
+        var coinRowCounter = 0;
+        var coinColumnCounter = 0;
+        var coin;
+        var columns = 20;
+        var rows = 25;
+        for (var i = 0; i < columns * rows; i++) {
+            var x = 0;
+            var y = 0;
+            var coin = this.specialCoins.getFirstExists(false);
 
-      var coin = this.coins.getFirstExists(false);
-    if(!coin) {
-      coin = new Coin(this.game, 0, 0);
-      this.coins.add(coin);
-    }
+            if (!coin) {
+                coin = new Coin(this.game, 0, 0);
+                this.specialCoins.add(coin);
+            }
 
-    coin.reset(x, y);
-    coin.revive();
-    return coin;
-  },
-  generateCoins: function() {
-    if(!this.previousCoinType || this.previousCoinType < 3) {
-      var coinType = this.game.rnd.integer() % 5;
-      switch(coinType) {
-        case 0:
-          //do nothing. No coins generated
-          break;
-        case 1:
-        case 2:
-          // if the cointype is 1 or 2, create a single coin
-          //this.createCoin();
-          this.createCoin();
+            coin.reset(x, y);
+            coin.specialY = coin.y - coin.height - (coinColumnCounter * coin.height) - (coinColumnCounter * this.coinSpacingY);
+            coin.specialX = coinSpawnX + (coinRowCounter * coin.width) + (coinRowCounter * this.coinSpacingX);
+            console.log("speicalx: " + coin.specialX);
+            coin.revive();
+            coin.y = coin.specialY;
+            coin.x = coin.specialX;
+            coin.body.velocity.y = 0;
+            coinColumnCounter++;
+            if (i + 1 >= columns && (i + 1) % columns === 0) {
+                coinRowCounter++;
+                coinColumnCounter = 0;
+            }
+        }
 
-          break;
-        case 3:
-          // create a small group of coins
-          this.createCoinGroup(2, 2);
-          break;
-        case 4:
-          //create a large coin group
-          this.createCoinGroup(6, 2);
-          break;
-        default:
-          // if somehow we error on the cointype, set the previouscointype to zero and do nothing
-          this.previousCoinType = 0;
-          break;
-      }
+    },
 
-      this.previousCoinType = coinType;
-    } else {
-      if(this.previousCoinType === 4) {
-        // the previous coin generated was a large group, 
-        // skip the next generation as well
-        this.previousCoinType = 3;
-      } else {
-        this.previousCoinType = 0;  
-      }
-      
-    }
-  },
-  createCoinGroup: function(columns, rows) {
-    //create 4 coins in a group
-    var coinSpawnX = this.game.rnd.integerInRange(50, this.game.world.width - 50);
-    var coinRowCounter = 0;
-    var coinColumnCounter = 0;
-    var coin;
-    for(var i = 0; i < columns * rows; i++) {
-      coin = this.createCoin(0, this.coinSpawnY);
-      coin.y = coin.y - (coinColumnCounter * coin.height) - (coinColumnCounter * this.coinSpacingY);
-      coin.x = coinSpawnX + (coinRowCounter * coin.width) + (coinRowCounter * this.coinSpacingX);
-      coinColumnCounter++;
-      if(i+1 >= columns && (i+1) % columns === 0) {
-        coinRowCounter++;
-        coinColumnCounter = 0;
-      } 
-    }
-  },
+    createCoinGroup: function (columns, rows) {
+        //create 4 coins in a group
+        var coinSpawnX = this.game.rnd.integerInRange(50, this.game.world.width - 50);
+        var coinRowCounter = 0;
+        var coinColumnCounter = 0;
+        var coin;
+        for (var i = 0; i < columns * rows; i++) {
+            coin = this.createCoin(0, this.coinSpawnY);
+            coin.y = coin.y - (coinColumnCounter * coin.height) - (coinColumnCounter * this.coinSpacingY);
+            coin.x = coinSpawnX + (coinRowCounter * coin.width) + (coinRowCounter * this.coinSpacingX);
+            coinColumnCounter++;
+            if (i + 1 >= columns && (i + 1) % columns === 0) {
+                coinRowCounter++;
+                coinColumnCounter = 0;
+            }
+        }
+
+    },
+
+    createEnemy: function () {
+        var x = this.game.width;
+        var y = this.game.rnd.integerInRange(50, this.game.world.height - 192);
+
+        var enemy = this.enemies.getFirstExists(false);
+        if (!enemy) {
+            enemy = new Enemy(this.game, 0, 0);
+            this.enemies.add(enemy);
+        }
+        enemy.reset(x, y);
+        enemy.revive();
+    },
 
 
-  createEnemy: function() {
-    var x = this.game.width;
-    var y = this.game.rnd.integerInRange(50, this.game.world.height - 192);
+    balloonHit: function (player, balloon) {
 
-    var enemy = this.enemies.getFirstExists(false);
-    if(!enemy) {
-      enemy = new Enemy(this.game, 0, 0);
-      this.enemies.add(enemy);
-    }
-    enemy.reset(x, y);
-    enemy.revive();
-  },
+        if (balloon.color == this.playerColor) {
+            this.gameSpeed += this.speedFactor;
+            this.balloonSize++;
+            this.score += 2*this.balloonSize;
+        }
+        else {
+            this.gameSpeed -= this.speedFactor;
+            this.balloonSize--;
+        }
 
-    groundHit: function(player, ground) {
-    player.body.velocity.y = -200;
-  },
+        this.balloonRate = 100/this.gameSpeed*40;
+        this.coinRate = 100/this.gameSpeed*40;
 
-    balloonHit: function(player, balloon) {
+        if (this.balloonSize == 10) {
+            //SPECIAL EFFEKT AUSLÖSEN
+            //this.balloons.addAll('body.velocity.y', 0);
+            //this.coins.addAll('body.velocity.y', 0);
+            this.balloons.visible = false;
+            this.coins.visible = false;
+           // this.gameSpeed = this.spacedUpSpeed;
+            this.spacedUp = true;
+            this.spacedSprite.visible = true;
+            this.specialCoins.setAll('visible', true);
+        }
+        else if (this.balloonSize == 0) {
+            enemyHit(player, null);
+        }
+
+        this.resizeBalloon.scale.setTo(this.balloonSize/10);
+        //this.resizeBalloon.scale.set(size, size);
+        this.resizeBalloon.x = (this.player.x + 10.5) - parseFloat(this.resizeBalloon.width/2).toFixed(1);
+        this.resizeBalloon.y = (this.player.y - 47) - this.resizeBalloon.height;
+
+        this.coinSound.play();
         balloon.kill();
-
         var dummyBalloon = new Balloon(this.game, balloon.x, balloon.y, balloon.color);
+        balloon.destroy();
         this.game.add.existing(dummyBalloon);
 
         //dummyBalloon.animations.play('spin2', 3, true);
 
-        dummyBalloon.destroy();
+        var scoreTween = this.game.add.tween(dummyBalloon).to({
+            x: balloon.x,
+            y: balloon.y + 50
+        }, 300, Phaser.Easing.Linear.NONE, true);
 
-
+        scoreTween.onComplete.add(function () {
+            dummyBalloon.destroy();
+            this.scoreText.text = 'Score: ' + parseInt(this.score);
+        }, this);
 
     },
-    coinHit: function(player, coin) {
-        this.score++;
+
+    coinHit: function (player, coin) {
+        this.score += 2*this.gameSpeed;
         this.coinSound.play();
         coin.kill();
 
         var dummyCoin = new Coin(this.game, coin.x, coin.y);
         this.game.add.existing(dummyCoin);
+       // coin.destroy();
 
-        dummyCoin.animations.play ('spin', 40, true);
+        dummyCoin.animations.play('spin', 40, true);
 
         var scoreTween = this.game.add.tween(dummyCoin).to({x: 50, y: 50}, 300, Phaser.Easing.Linear.NONE, true);
 
-        scoreTween.onComplete.add(function() {
+        scoreTween.onComplete.add(function () {
             dummyCoin.destroy();
-            this.scoreText.text = 'Score: ' + this.score;
+            this.scoreText.text = 'Score: ' + parseInt(this.score);
         }, this);
 
     },
-  enemyHit: function(player, enemy) {
-    player.kill();
-    enemy.kill();
 
-    this.deathSound.play();
-    this.gameMusic.stop();
-    
-    //this.ground.stopScroll();
-    //this.foreground.stopScroll();
+    specialcoinHit: function(player, coin){
+       if(this.spacedUp == true) {
+           this.score += 15;
+           this.coinSound.play();
+           coin.visible = false;
+           var dummyCoin = new Coin(this.game, coin.x, coin.y);
+           this.game.add.existing(dummyCoin);
 
-    this.enemies.setAll('body.velocity.x', 0);
-    this.coins.setAll('body.velocity.x', 0);
+           coin.x = coin.specialX;
+           coin.y = coin.specialY;
 
-    this.enemyTimer = Number.MAX_VALUE;
-    this.coinTimer = Number.MAX_VALUE;
+           dummyCoin.animations.play('spin', 40, true);
 
-    //var scoreboard = new Scoreboard(this.game);
-    //scoreboard.show(this.score);
+           var scoreTween = this.game.add.tween(dummyCoin).to({x: 50, y: 50}, 300, Phaser.Easing.Linear.NONE, true);
+
+           scoreTween.onComplete.add(function () {
+               dummyCoin.destroy();
+               this.scoreText.text = 'Score: ' + parseInt(this.score);
+           }, this);
+       }
+    },
+
+    enemyHit: function (player, enemy) {
+        player.kill();
+        enemy.kill();
+
+        this.deathSound.play();
+        this.gameMusic.stop();
+
+        //this.ground.stopScroll();
+        this.backgroundMenue.stopScroll();
+        //this.foreground.stopScroll();
+
+        this.enemies.setAll('body.velocity.x', 0);
+        this.coins.setAll('body.velocity.x', 0);
+
+        this.enemyTimer = Number.MAX_VALUE;
+        this.coinTimer = Number.MAX_VALUE;
+
+        var scoreboard = new Scoreboard(this.game);
+        scoreboard.show(this.score);
+    },
+
+    groundHit: function(ground, coin){
+        coin.kill();
+        if(this.coins.length > 12){
+            coin.destroy();
+        }
+    },
+
+    balloonsGroundHit: function(ground, balloon){
+        console.log("balloongroundhit: ");
+        balloon.kill();
+        if(this.balloons.length > 12){
+            balloon.destroy();
+        }
+    },
+
+    specialcoinGroundHit: function(ground, coin){
+        this.score += this.gameSpeed;
+        this.coinSound.play();
+        coin.body.x = coin.specialX;
+        coin.body.y = coin.specialY;
+        coin.visible = false;
+
+    },
+
+    scrollBackground: function () {
+        var ykoordinate = 0;
+        var ystartkoordinate = 0;
+        var bgSpeed = 4;
+
+        switch (this.levelstage) {
+            case 1:
+                ykoordinate = 1800;
+                ystartkoordinate = 600;
+                break;
+            case 2:
+                ykoordinate = 4200;
+                ystartkoordinate = 3000;
+                break;
+            case 3:
+                ykoordinate = 6600;
+                ystartkoordinate = 5400;
+                break;
+            default:
+                ykoordinate = 6600;
+                ystartkoordinate = 5400;
+        }
+
+        this.backgroundTile.tilePosition.y += bgSpeed;
+
+        if (this.backgroundTile.tilePosition.y >= ykoordinate - bgSpeed) {
+            this.backgroundCounter++;
+            if (this.backgroundCounter == this.backgroundMax) {
+                this.levelstage++;
+                this.backgroundCounter = 0;
+            }
+            else {
+                if (this.backgroundTile.tilePosition.y >= ykoordinate - bgSpeed) {
+                    this.backgroundTile.tilePosition.y = ystartkoordinate;
+                }
+            }
+        }
+
+        if(this.spacedUp){
+            this.spacedUpCount += this.spacedUpSpeed;
+            if(this.spacedUpCount >= (20*10 + 20*this.specialCoins.getFirstExists(true).height + this.game.height)){
+                this.spacedUp = false;
+                this.spacedUpCount = 0;
+                this.spacedSprite.visible = false;
+                //this.gameSpeed = 4.0;
+                this.balloonSize = 5;
+                this.resizeBalloon.scale.set(0.5,0.5);
+                this.resizeBalloon.x = (this.player.x + 10.5) - parseFloat(this.resizeBalloon.width/2).toFixed(1);
+                this.resizeBalloon.y = (this.player.y - 47) - this.resizeBalloon.height;
 
 
-  },
+                this.balloons.visible = true;
+                this.coins.visible = true;
+                this.specialCoins.setAll('visible', true);
+            }
+        }
+    },
 
-  scrollBackground: function() {
-      //var distance = speed * 0.2;
+    scrollSpecialCoins: function() {
+        if(this.spacedUp == true) {
+            this.specialCoins.addAll('body.y', this.spacedUpSpeed, true, true);
+        }
+    },
 
-      console.log("height: " + this.game.height);
+    scrollCoins: function () {
+        this.coins.addAll('body.y', this.gameSpeed, true, true);
+    },
 
-      this.backgroundTile.tilePosition.y += 4;
-      if (this.backgroundTile.tilePosition.y >= 1800 - 4) {
-          this.backgroundTile.tilePosition.y = 600;
-      }
+    scrollBalloons: function () {
+        this.balloons.addAll('body.y', this.gameSpeed, true, true);
+    },
 
-  },
-  movePlayer: function() {
+    movePlayer: function () {
+        var animationfly  = 'flyRed';
+        var animationflyLeft  = 'flyRedLeft';
+        var animationflyRight  = 'flyRedRight';
+        switch (this.playerColor){
+            case 'red':
+                break;
+            case 'blue':
+                animationfly  = 'flyBlue';
+                animationflyLeft  = 'flyBlueLeft';
+                animationflyRight  = 'flyBlueRight';
+                break;
+            case 'green':
+                animationfly  = 'flyGreen';
+                animationflyLeft  = 'flyGreenLeft';
+                animationflyRight  = 'flyGreenRight';
+                break;
+            case 'yellow':
+                animationfly  = 'flyYellow';
+                animationflyLeft  = 'flyYellowLeft';
+                animationflyRight  = 'flyYellowRight';
+                break;
 
-    if(this.rightKey.isDown) {
-      this.player.body.x += 5;
-    }else if(this.leftKey.isDown) {
-      this.player.body.x -=5;
-    }else if (this.downKey.isDown) {
-      this.player.body.y ++;
+            default:
+                break;
+        }
 
-    }else if (this.upKey.isDown) {
-        this.player.body.y--;
-    }
+        if (this.rightKey.isDown) {
+            if (this.spaceKey.isDown) {
+                this.player.body.x += 25;
+                this.resizeBalloon.body.x += 25;
+                this.resizeBalloonEnd.body.x += 25;
+            } else {
+                this.player.body.x += 5;
+                this.resizeBalloon.body.x += 5;
+                this.resizeBalloonEnd.body.x += 5;
+            }
+            this.player.animations.play(animationflyRight, 8, true);
+            this.checkCollideRightBounds();
+        } else if (this.leftKey.isDown) {
+            if (this.spaceKey.isDown) {
+                this.player.body.x -= 25;
+                this.resizeBalloon.body.x -= 25;
+                this.resizeBalloonEnd.body.x -= 25;
+            }
+            else {
+                this.player.body.x -= 5;
+                this.resizeBalloon.body.x -= 5;
+                this.resizeBalloonEnd.body.x -= 5;
+            }
+            this.player.animations.play(animationflyLeft, 8, true);
+            this.checkCollideLeftBounds();
+        }
+        /*else if (this.downKey.isDown) {
+            if (this.spaceKey.isDown) {
+                this.player.body.y += 25;
+                this.resizeBalloon.body.y += 25;
+                this.resizeBalloonEnd.body.y += 25;
+            }
+            else {
+                this.player.body.y += 5;
+                this.resizeBalloon.body.y += 5;
+                this.resizeBalloonEnd.body.y += 5;
+            }
+            this.player.animations.play(animationfly, 8, true);
+        }*/
+        else{
+            this.player.animations.play(animationfly, 8, true);
+        }
 
-  }
+    },
+
+    checkCollideRightBounds: function(){
+        if((this.player.body.x + this.player.width) >= this.game.width){
+            this.player.body.x = 0;
+            this.resizeBalloon.body.x = (this.player.body.x + 37) - parseFloat(this.resizeBalloon.width/2).toFixed(1);
+            this.resizeBalloonEnd.body.x = 10.5;
+
+        }
+    },
+
+    checkCollideLeftBounds: function(){
+        if((this.player.body.x + this.player.width) <= 0){
+            this.player.body.x = this.game.width;
+            this.resizeBalloon.body.x = (this.player.body.x + 37) - parseFloat(this.resizeBalloon.width/2).toFixed(1);
+            this.resizeBalloonEnd.body.x = this.player.body.x + 10.5;
+        }
+
+    },
+
+    changePlayerColor: function(){
+        if (this.qKey.isDown){
+            this.playerColor = 'red';
+            this.resizeBalloon.play('red');
+            this.player.animations.play('flyRed');
+
+        }
+        else if(this.wKey.isDown){
+            this.playerColor = 'blue';
+            this.resizeBalloon.play('blue');
+            this.player.animations.play('flyBlue');
+        }
+        else if(this.eKey.isDown){
+            this.playerColor = 'green';
+            this.resizeBalloon.play('green');
+            this.player.animations.play('flyGreen');
+        }
+        else if(this.rKey.isDown){
+            this.playerColor = 'yellow';
+            this.resizeBalloon.play('yellow');
+            this.player.animations.play('flyYellow');
+        }
+
+    },
+
+    createFilter: function () {
+        var fragmentRainbowSrc = [
+            "precision mediump float;",
+            "uniform vec2      resolution;",
+            "uniform float     time;",
+
+            "void main( void )",
+            "{",
+            "vec2 p = ( gl_FragCoord.xy / resolution.xy ) * 2.0 - 1.0;",
+
+            "vec3 c = vec3( 0.0 );",
+
+            "float amplitude = 0.50;",
+            "float glowT = sin(time) * 0.5 + 0.5;",
+            "float glowFactor = mix( 0.15, 0.35, glowT );",
+
+            "c += vec3(0.02, 0.03, 0.13) * ( glowFactor * abs( 1.0 / sin(p.x + sin( p.y + time ) * amplitude ) ));",
+            "c += vec3(0.02, 0.10, 0.03) * ( glowFactor * abs( 1.0 / sin(p.x + cos( p.y + time+1.00 ) * amplitude+0.1 ) ));",
+            "c += vec3(0.15, 0.05, 0.20) * ( glowFactor * abs( 1.0 / sin(p.y + sin( p.x + time+1.30 ) * amplitude+0.15 ) ));",
+            "c += vec3(0.20, 0.05, 0.05) * ( glowFactor * abs( 1.0 / sin(p.y + cos( p.x + time+3.00 ) * amplitude+0.3 ) ));",
+            "c += vec3(0.17, 0.17, 0.05) * ( glowFactor * abs( 1.0 / sin(p.y + cos( p.x + time+5.00 ) * amplitude+0.2 ) ));",
+
+            "gl_FragColor = vec4( c, 0.2);",
+            "}"
+        ];
+
+        this.filter = new Phaser.Filter(game, null, fragmentRainbowSrc);
+        this.filter.setResolution(this.game.width, 600);
+        this.spacedSprite = game.add.sprite();
+        game.physics.arcade.enable(this.spacedSprite);
+        this.spacedSprite.width = this.game.width;
+        this.spacedSprite.height = 600;
+        this.spacedSprite.filters = [this.filter];
+        this.spacedSprite.anchor.setTo(0.5, 0.5);
+    },
 
 };
