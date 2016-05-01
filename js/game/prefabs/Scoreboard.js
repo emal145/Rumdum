@@ -60,5 +60,5 @@ Scoreboard.prototype.show = function(score) {
 };
 
 Scoreboard.prototype.restart = function() {
-  this.game.state.start('Game', true, false);
+  this.game.state.start('MainMenu', true, false);
 };

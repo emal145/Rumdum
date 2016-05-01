@@ -8,9 +8,9 @@ IlioLostInSpace.Game = function () {
     this.balloonRate = 900;
     this.balloonTimer = 0;
     this.resizeSize = 5.0;
-    this.resizeRate = 200;
+    this.resizeRate = 500;
     this.resizeTimer = 0;
-    this.enemyRate = 500;
+    this.enemyRate = 3000;
     this.enemyTimer = 0;
 
     this.score = 0;
@@ -25,12 +25,13 @@ IlioLostInSpace.Game = function () {
     this.gameSpeed = 4.0;
     this.playerColor = 'red';
     this.balloonSize = 5;
-    this.speedFactor = 0.8;
+    this.speedFactor = 0.3;
     this.filter;
     this.spacedSprite;
     this.spacedUpCount = 0;
     this.spacedUp = false;
     this.playerColorNumber = 0;
+    this.gameisOver = false;
 };
 
 IlioLostInSpace.Game.prototype = {
@@ -41,12 +42,10 @@ IlioLostInSpace.Game.prototype = {
         this.addSprites();
         this.createFilter();
         this.spacedSprite.visible = false;
-
         this.createPlayer();
         this.createPlayerBalloon();
 
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
-        //this.game.physics.arcade.gravity.y = 9.81;
 
         this.game.physics.arcade.enableBody(this.ground);
         this.ground.body.allowGravity = false;
@@ -54,8 +53,6 @@ IlioLostInSpace.Game.prototype = {
 
         this.game.physics.arcade.enableBody(this.player);
         this.player.body.collideWorldBounds = false;
-        //this.player.body.velocity.y = -10;
-        //this.player.body.bounce.set(0.25);
         this.coins = this.game.add.group();
         this.specialCoins = this.game.add.group();
         this.balloons = this.game.add.group();
@@ -68,66 +65,88 @@ IlioLostInSpace.Game.prototype = {
         this.gameMusic.play('', 0, true);
 
         this.coinSpawnY = this.game.height - 100;
-
         this.generateSpecialCoins();
        // this.specialCoins.visible = false;
+        this.balloonTimer = 0;
+        this.resizeSize = 5.0;
+        this.resizeTimer = 0;
+        this.enemyTimer = 0;
+        this.score = 0;
+        this.backgroundCounter = 0;
+        this.levelstage = 1;
+        this.gameSpeed = 4.0;
+        this.playerColor = 'red';
+        this.balloonSize = 5;
+        this.spacedUpCount = 0;
+        this.spacedUp = false;
+        this.playerColorNumber = 0;
+        this.gameisOver = false;
     },
     update: function () {
-        this.scrollBackground();
-        this.scrollCoins();
-        this.scrollBalloons();
-        this.movePlayer();
-        this.changePlayerColor();
+       if(this.gameisOver == false) {
 
-        if (this.spacedUp == false) {
-            if (this.coinTimer < this.game.time.now) {
-                this.generateCoins();
-                this.coinTimer = this.game.time.now + this.coinRate;
-            }
+           this.scrollBackground();
+           this.scrollCoins();
+           this.scrollBalloons();
+           this.movePlayer();
+           this.changePlayerColor();
 
-            if (this.balloonTimer < this.game.time.now) {
-                this.generateBalloon();
-                this.balloonTimer = this.game.time.now + this.balloonRate;
-            }
-
-            if (this.resizeTimer < this.game.time.now) {
-                this.minimizeResizeBalloon();
-                this.resizeTimer = this.game.time.now + this.resizeRate;
-            }
-
-
-        }
-        else{
-            //SPECIAL COINS MUSTER GENERIEREN
-            this.scrollSpecialCoins();
-            /* if (this.coinTimer < this.game.time.now) {
-                   this.generateSpecialCoins();
-                   this.coinTimer = this.game.time.now + 75;
+           if (this.spacedUp == false) {
+               if (this.coinTimer < this.game.time.now) {
+                   this.generateCoins();
+                   this.coinTimer = this.game.time.now + this.coinRate;
                }
-               */
-        }
 
-        /*if(this.enemyTimer < this.game.time.now) {
-         this.createEnemy();
-         this.enemyTimer = this.game.time.now + this.enemyRate;
-         }*/
+               if (this.balloonTimer < this.game.time.now) {
+                   this.generateBalloon();
+                   this.balloonTimer = this.game.time.now + this.balloonRate;
+               }
 
-        this.game.physics.arcade.overlap( this.ground, this.coins, this.groundHit, null, this);
-        this.game.physics.arcade.overlap(this.ground,this.balloons, this.balloonsGroundHit, null, this);
-        this.game.physics.arcade.overlap(this.ground, this.specialCoins, this.specialcoinGroundHit, null, this);
-        this.game.physics.arcade.overlap(this.resizeBalloon, this.coins, this.coinHit, null, this);
-        this.game.physics.arcade.overlap(this.resizeBalloon, this.balloons, this.balloonHit, null, this);
-        this.game.physics.arcade.overlap(this.player, this.coins, this.coinHit, null, this);
-        this.game.physics.arcade.overlap(this.player, this.specialCoins, this.specialcoinHit, null, this);
-        this.game.physics.arcade.overlap(this.player, this.balloons, this.balloonHit, null, this);
-        this.game.physics.arcade.overlap(this.player, this.enemies, this.enemyHit, null, this);
+               if (this.resizeTimer < this.game.time.now) {
+                   this.minimizeResizeBalloon();
+                   this.resizeTimer = this.game.time.now + this.resizeRate;
+               }
+
+               if(this.enemyTimer < this.game.time.now) {
+                   if(this.levelstage == 1){
+                       this.createEnemyBird();
+                       this.enemyRate = this.game.rnd.integerInRange(3000, 6000);
+                   }
+                   this.enemyTimer = this.game.time.now + this.enemyRate;
+               }
+
+           }
+           else {
+               //SPECIAL COINS MUSTER GENERIEREN
+               this.scrollSpecialCoins();
+               /* if (this.coinTimer < this.game.time.now) {
+                this.generateSpecialCoins();
+                this.coinTimer = this.game.time.now + 75;
+                }
+                */
+           }
 
 
-        if (this.spacedUp == true) {
-            this.filter.update();
-        }
 
+           this.game.physics.arcade.overlap(this.ground, this.coins, this.groundHit, null, this);
+           this.game.physics.arcade.overlap(this.ground, this.balloons, this.balloonsGroundHit, null, this);
+           this.game.physics.arcade.overlap(this.ground, this.specialCoins, this.specialcoinGroundHit, null, this);
+           this.game.physics.arcade.overlap(this.resizeBalloon, this.coins, this.coinHit, null, this);
+           this.game.physics.arcade.overlap(this.resizeBalloon, this.balloons, this.balloonHit, null, this);
+           this.game.physics.arcade.overlap(this.player, this.coins, this.coinHit, null, this);
+           this.game.physics.arcade.overlap(this.player, this.specialCoins, this.specialcoinHit, null, this);
+           this.game.physics.arcade.overlap(this.player, this.balloons, this.balloonHit, null, this);
+           this.game.physics.arcade.overlap(this.player, this.enemies, this.enemyHit, null, this);
+           this.game.physics.arcade.overlap(this.resizeBalloon, this.enemies, this.enemyHit, null, this);
+           this.game.physics.arcade.overlap(this.resizeBalloonEnd, this.enemies, this.enemyHit, null, this);
+
+
+           if (this.spacedUp == true) {
+               this.filter.update();
+           }
+       }
     },
+
     shutdown: function () {
         this.coins.destroy();
         this.enemies.destroy();
@@ -137,8 +156,8 @@ IlioLostInSpace.Game.prototype = {
     },
 
     initializeKeys: function(){
-        //this.upKey = game.input.keyboard.addKey(Phaser.Keyboard.UP);
-        //this.downKey = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
+        this.upKey = game.input.keyboard.addKey(Phaser.Keyboard.UP);
+        this.downKey = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
         this.leftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
         this.rightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
         this.spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -350,13 +369,13 @@ IlioLostInSpace.Game.prototype = {
 
     },
 
-    createEnemy: function () {
-        var x = this.game.width;
-        var y = this.game.rnd.integerInRange(50, this.game.world.height - 192);
+    createEnemyBird: function () {
+        var x = -50;
+        var y = this.game.rnd.integerInRange(50, this.game.world.height - (this.player.x + this.player.height));
 
         var enemy = this.enemies.getFirstExists(false);
         if (!enemy) {
-            enemy = new Enemy(this.game, 0, 0);
+            enemy = new EnemyBird(this.game, 0, 0);
             this.enemies.add(enemy);
         }
         enemy.reset(x, y);
@@ -388,8 +407,8 @@ IlioLostInSpace.Game.prototype = {
             this.spacedSprite.visible = true;
             this.specialCoins.setAll('visible', true);
         }
-        else if (this.balloonSize < 0) {
-            this.enemyHit(this.player, null);
+        else if (this.resizeSize <= 0.0) {
+            this.enemyHit(player, balloon);
         }
 
         this.resizeBalloon.scale.setTo(this.balloonSize/10);
@@ -460,24 +479,13 @@ IlioLostInSpace.Game.prototype = {
     },
 
     enemyHit: function (player, enemy) {
-        player.kill();
+       // player.kill();
+        this.player.body.velocity.y = 300;
+        this.resizeBalloon.kill();
+        this.resizeBalloonEnd.body.velocity.y = 300;
         enemy.kill();
 
-        this.deathSound.play();
-        this.gameMusic.stop();
-
-        //this.ground.stopScroll();
-        this.backgroundMenue.stopScroll();
-        //this.foreground.stopScroll();
-
-        this.enemies.setAll('body.velocity.x', 0);
-        this.coins.setAll('body.velocity.x', 0);
-
-        this.enemyTimer = Number.MAX_VALUE;
-        this.coinTimer = Number.MAX_VALUE;
-
-        var scoreboard = new Scoreboard(this.game);
-        scoreboard.show(this.score);
+       this.gameOverNow();
     },
 
     groundHit: function(ground, coin){
@@ -514,80 +522,89 @@ IlioLostInSpace.Game.prototype = {
             this.resizeBalloon.y = (this.player.y - 47) - this.resizeBalloon.height;
         }
         else{
-            this.enemyHit(this.player,null);
+            this.enemyHit(this.player, this.resizeBalloon);
         }
     },
 
     scrollBackground: function () {
-        var ykoordinate = 0;
-        var ystartkoordinate = 0;
-        var bgSpeed = 4;
+        if (this.gameisOver == false) {
+            var ykoordinate = 0;
+            var ystartkoordinate = 0;
+            var bgSpeed = 4;
 
-        switch (this.levelstage) {
-            case 1:
-                ykoordinate = 1800;
-                ystartkoordinate = 600;
-                break;
-            case 2:
-                ykoordinate = 4200;
-                ystartkoordinate = 3000;
-                break;
-            case 3:
-                ykoordinate = 6600;
-                ystartkoordinate = 5400;
-                break;
-            default:
-                ykoordinate = 6600;
-                ystartkoordinate = 5400;
-        }
-
-        this.backgroundTile.tilePosition.y += bgSpeed;
-
-        if (this.backgroundTile.tilePosition.y >= ykoordinate - bgSpeed) {
-            this.backgroundCounter++;
-            if (this.backgroundCounter == this.backgroundMax) {
-                this.levelstage++;
-                this.backgroundCounter = 0;
+            switch (this.levelstage) {
+                case 1:
+                    ykoordinate = 1800;
+                    ystartkoordinate = 600;
+                    break;
+                case 2:
+                    ykoordinate = 4200;
+                    ystartkoordinate = 3000;
+                    break;
+                case 3:
+                    ykoordinate = 6600;
+                    ystartkoordinate = 5400;
+                    break;
+                default:
+                    ykoordinate = 6600;
+                    ystartkoordinate = 5400;
             }
-            else {
-                if (this.backgroundTile.tilePosition.y >= ykoordinate - bgSpeed) {
-                    this.backgroundTile.tilePosition.y = ystartkoordinate;
+
+            this.backgroundTile.tilePosition.y += bgSpeed;
+
+            if (this.backgroundTile.tilePosition.y >= ykoordinate - bgSpeed) {
+                this.backgroundCounter++;
+                if (this.backgroundCounter == this.backgroundMax) {
+                    this.levelstage++;
+                    this.backgroundCounter = 0;
+                }
+                else {
+                    if (this.backgroundTile.tilePosition.y >= ykoordinate - bgSpeed) {
+                        this.backgroundTile.tilePosition.y = ystartkoordinate;
+                    }
                 }
             }
-        }
 
-        if(this.spacedUp){
-            this.spacedUpCount += this.spacedUpSpeed;
-            if(this.spacedUpCount >= (20*10 + 20*this.specialCoins.getFirstExists(true).height + this.game.height)){
-                this.spacedUp = false;
-                this.spacedUpCount = 0;
-                this.spacedSprite.visible = false;
-                //this.gameSpeed = 4.0;
-                this.balloonSize = 5;
-                this.resizeBalloon.scale.set(0.5,0.5);
-                this.resizeBalloon.x = (this.player.x + 10.5) - parseFloat(this.resizeBalloon.width/2).toFixed(1);
-                this.resizeBalloon.y = (this.player.y - 47) - this.resizeBalloon.height;
+            if (this.spacedUp) {
+                this.spacedUpCount += this.spacedUpSpeed;
+                if (this.spacedUpCount >= (20 * 10 + 20 * this.specialCoins.getFirstExists(true).height + this.game.height)) {
+                    this.spacedUp = false;
+                    this.spacedUpCount = 0;
+                    this.spacedSprite.visible = false;
+                    //this.gameSpeed = 4.0;
+                    this.balloonSize = 5;
+                    this.resizeBalloon.scale.set(0.5, 0.5);
+                    this.resizeBalloon.x = (this.player.x + 10.5) - parseFloat(this.resizeBalloon.width / 2).toFixed(1);
+                    this.resizeBalloon.y = (this.player.y - 47) - this.resizeBalloon.height;
 
 
-                this.balloons.visible = true;
-                this.coins.visible = true;
-                this.specialCoins.setAll('visible', true);
+                    this.balloons.visible = true;
+                    this.coins.visible = true;
+                    this.specialCoins.setAll('visible', true);
+                }
             }
         }
     },
 
+
     scrollSpecialCoins: function() {
-        if(this.spacedUp == true) {
-            this.specialCoins.addAll('body.y', this.spacedUpSpeed, true, true);
+        if (this.gameisOver == false) {
+            if(this.spacedUp == true) {
+                this.specialCoins.addAll('body.y', this.spacedUpSpeed, true, true);
+            }
         }
     },
 
     scrollCoins: function () {
-        this.coins.addAll('body.y', this.gameSpeed, true, true);
+        if (this.gameisOver == false) {
+            this.coins.addAll('body.y', this.gameSpeed, true, true);
+        }
     },
 
     scrollBalloons: function () {
-        this.balloons.addAll('body.y', this.gameSpeed, true, true);
+        if (this.gameisOver == false) {
+             this.balloons.addAll('body.y', this.gameSpeed, true, true);
+        }
     },
 
     movePlayer: function () {
@@ -643,7 +660,7 @@ IlioLostInSpace.Game.prototype = {
             this.player.animations.play(animationflyLeft, 8, true);
             this.checkCollideLeftBounds();
         }
-        /*else if (this.downKey.isDown) {
+        else if (this.downKey.isDown) {
             if (this.spaceKey.isDown) {
                 this.player.body.y += 25;
                 this.resizeBalloon.body.y += 25;
@@ -655,7 +672,20 @@ IlioLostInSpace.Game.prototype = {
                 this.resizeBalloonEnd.body.y += 5;
             }
             this.player.animations.play(animationfly, 8, true);
-        }*/
+        }
+        else if (this.upKey.isDown) {
+            if (this.spaceKey.isDown) {
+                this.player.body.y -= 25;
+                this.resizeBalloon.body.y -= 25;
+                this.resizeBalloonEnd.body.y -= 25;
+            }
+            else {
+                this.player.body.y -= 5;
+                this.resizeBalloon.body.y -= 5;
+                this.resizeBalloonEnd.body.y -= 5;
+            }
+            this.player.animations.play(animationfly, 8, true);
+        }
         else{
             this.player.animations.play(animationfly, 8, true);
         }
@@ -762,4 +792,18 @@ IlioLostInSpace.Game.prototype = {
         this.spacedSprite.anchor.setTo(0.5, 0.5);
     },
 
+ gameOverNow: function() {
+     this.deathSound.play();
+     this.gameMusic.stop();
+     this.gameisOver = true;
+
+     this.enemies.setAll('body.velocity.x', 0);
+     this.coins.setAll('body.velocity.x', 0);
+
+     this.enemyTimer = Number.MAX_VALUE;
+     this.coinTimer = Number.MAX_VALUE;
+
+     var scoreboard = new Scoreboard(this.game);
+     scoreboard.show(parseInt(this.score));
+ }
 };
