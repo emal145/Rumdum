@@ -13,14 +13,14 @@ IlioLostInSpace.Game = function () {
 
     this.score = 0;
     this.previousCoinType = null;
-
+    this.spacedUpSpeed = 13;
     this.coinSpawnY = null;
     this.coinSpacingX = 10;
     this.coinSpacingY = 10;
     this.backgroundMax = 5;
     this.backgroundCounter = 0;
     this.levelstage = 1;
-    this.gameSpeed = 2;
+    this.gameSpeed = 4.0;
     this.playerColor = 'red';
     this.balloonSize = 5;
     this.speedFactor = 0.8;
@@ -40,20 +40,7 @@ IlioLostInSpace.Game.prototype = {
         this.spacedSprite.visible = false;
 
         this.createPlayer();
-        this.resizeBalloon.scale.set(0.5, 0.5);
-        this.resizeBalloon.animations.add('red', [0]);
-        this.resizeBalloon.animations.add('blue', [1]);
-        this.resizeBalloon.animations.add('yellow', [2]);
-        this.resizeBalloon.animations.add('green', [3]);
-        this.resizeBalloon.animations.play('red', 8, true);
-
-        this.resizeBalloonEnd.scale.set(0.7, 0.7);
-        this.resizeBalloonEnd.animations.add('red', [0]);
-        this.resizeBalloonEnd.animations.play('red', 8, true);
-
-        this.game.physics.arcade.enableBody(this.resizeBalloon);
-        this.game.physics.arcade.enableBody(this.resizeBalloonEnd);
-
+        this.createPlayerBalloon();
 
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         //this.game.physics.arcade.gravity.y = 9.81;
@@ -63,16 +50,14 @@ IlioLostInSpace.Game.prototype = {
         this.ground.body.immovable = true;
 
         this.game.physics.arcade.enableBody(this.player);
-        this.player.body.collideWorldBounds = true;
+        this.player.body.collideWorldBounds = false;
         //this.player.body.velocity.y = -10;
         //this.player.body.bounce.set(0.25);
-
         this.coins = this.game.add.group();
+        this.specialCoins = this.game.add.group();
         this.balloons = this.game.add.group();
         this.enemies = this.game.add.group();
-
         this.scoreText = this.game.add.bitmapText(10, 10, 'minecraftia', 'Score: 0', 24);
-
         this.jetSound = this.game.add.audio('rocket');
         this.coinSound = this.game.add.audio('coin');
         this.deathSound = this.game.add.audio('death');
@@ -80,6 +65,9 @@ IlioLostInSpace.Game.prototype = {
         this.gameMusic.play('', 0, true);
 
         this.coinSpawnY = this.game.height - 100;
+
+        this.generateSpecialCoins();
+       // this.specialCoins.visible = false;
     },
     update: function () {
         this.scrollBackground();
@@ -87,31 +75,40 @@ IlioLostInSpace.Game.prototype = {
         this.scrollBalloons();
         this.movePlayer();
         this.changePlayerColor();
+        if (this.spacedUp == false) {
+            if (this.coinTimer < this.game.time.now) {
+                this.generateCoins();
+                this.coinTimer = this.game.time.now + this.coinRate;
+            }
 
-        if (this.coinTimer < this.game.time.now) {
-            this.generateCoins();
-            this.coinTimer = this.game.time.now + this.coinRate;
+            if (this.balloonTimer < this.game.time.now) {
+                this.generateBalloon();
+                this.balloonTimer = this.game.time.now + this.balloonRate;
+            }
         }
-
-        if (this.balloonTimer < this.game.time.now) {
-            this.generateBalloon();
-            this.balloonTimer = this.game.time.now + this.balloonRate;
+        else{
+            //SPECIAL COINS MUSTER GENERIEREN
+            this.scrollSpecialCoins();
+            /* if (this.coinTimer < this.game.time.now) {
+                   this.generateSpecialCoins();
+                   this.coinTimer = this.game.time.now + 75;
+               }
+               */
         }
-
 
         /*if(this.enemyTimer < this.game.time.now) {
          this.createEnemy();
          this.enemyTimer = this.game.time.now + this.enemyRate;
          }*/
 
-        this.game.physics.arcade.overlap(this.coins, this.ground, this.groundHit, null, this);
-        //this.game.physics.arcade.overlap(this.balloons, this.ground, this.balloonsGroundHit, null, this);
+        this.game.physics.arcade.overlap( this.ground, this.coins, this.groundHit, null, this);
+        this.game.physics.arcade.overlap(this.ground,this.balloons, this.balloonsGroundHit, null, this);
+        this.game.physics.arcade.overlap(this.ground, this.specialCoins, this.specialcoinGroundHit, null, this);
         this.game.physics.arcade.overlap(this.resizeBalloon, this.coins, this.coinHit, null, this);
         this.game.physics.arcade.overlap(this.resizeBalloon, this.balloons, this.balloonHit, null, this);
         this.game.physics.arcade.overlap(this.player, this.coins, this.coinHit, null, this);
+        this.game.physics.arcade.overlap(this.player, this.specialCoins, this.specialcoinHit, null, this);
         this.game.physics.arcade.overlap(this.player, this.balloons, this.balloonHit, null, this);
-
-
         this.game.physics.arcade.overlap(this.player, this.enemies, this.enemyHit, null, this);
 
 
@@ -129,8 +126,8 @@ IlioLostInSpace.Game.prototype = {
     },
 
     initializeKeys: function(){
-        this.upKey = game.input.keyboard.addKey(Phaser.Keyboard.UP);
-        this.downKey = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
+        //this.upKey = game.input.keyboard.addKey(Phaser.Keyboard.UP);
+        //this.downKey = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
         this.leftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
         this.rightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
         this.spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -143,10 +140,10 @@ IlioLostInSpace.Game.prototype = {
 
     addSprites: function(){
         this.backgroundTile = this.game.add.tileSprite(0, this.game.height - 7200, this.game.width, 7200, 'backgroundTile');
-        this.ground = this.game.add.tileSprite(0, this.game.height,this.game.width, this.game.height, 'ground');
-        this.player = this.add.sprite(200, this.game.height / 2, 'player');
-        this.resizeBalloon = this.game.add.sprite(174, this.game.height/2-125, 'resizeBalloon');
-        this.resizeBalloonEnd = this.game.add.sprite(185, this.game.height/2-50, 'resizeBalloonEnd');
+        this.ground = this.game.add.tileSprite( -100, this.game.height+15,this.game.width+200, 2, 'ground');
+        this.player = this.add.sprite(200, this.game.height / 2 + 150, 'player');
+        this.resizeBalloon = this.game.add.sprite(173, this.game.height/2-122+150, 'resizeBalloon');
+        this.resizeBalloonEnd = this.game.add.sprite(185, this.game.height/2-50+150, 'resizeBalloonEnd');
 
     },
 
@@ -174,16 +171,33 @@ IlioLostInSpace.Game.prototype = {
 
     },
 
+    createPlayerBalloon: function(){
+        this.resizeBalloon.scale.set(0.5, 0.5);
+        //this.resizeBalloon.anchor.setTo(0.5,0.5);
+        this.resizeBalloon.animations.add('red', [0]);
+        this.resizeBalloon.animations.add('blue', [1]);
+        this.resizeBalloon.animations.add('yellow', [2]);
+        this.resizeBalloon.animations.add('green', [3]);
+        this.resizeBalloon.animations.play('red', 8, true);
+
+        this.resizeBalloonEnd.scale.set(0.7, 0.7);
+        this.resizeBalloonEnd.animations.add('red', [0]);
+        this.resizeBalloonEnd.animations.play('red', 8, true);
+
+        this.game.physics.arcade.enableBody(this.resizeBalloon);
+        this.game.physics.arcade.enableBody(this.resizeBalloonEnd);
+    },
+
     createBalloon: function (color) {
         var x = this.game.rnd.integerInRange(this.game.world.height - 50, 50);
         var y = 0;
 
-        var balloon = this.coins.getFirstExists(false);
+        var balloon = this.balloons.getFirstExists(false);
         if (!balloon) {
             balloon = new Balloon(this.game, 0, 0, color);
             this.balloons.add(balloon);
         }
-
+        balloon.color = color;
         balloon.reset(x, y);
         balloon.revive();
         return balloon;
@@ -191,38 +205,38 @@ IlioLostInSpace.Game.prototype = {
 
     generateBalloon: function () {
 
-            var balloonType = this.game.rnd.integer() % 4;
-            switch (balloonType) {
-                case 0:
-                    this.createBalloon('red');
-                    break;
-                case 1:
-                    // create a small group of coins
-                    this.createBalloon('blue')
-                    break;
-                case 2:
-                    //create a large coin group
-                    this.createBalloon('green');
-                    break;
-                case 3:
-                    //create a large coin group
-                    this.createBalloon('yellow');
-                    break;
+        var balloonType = this.game.rnd.integer() % 4;
+        switch (balloonType) {
+            case 0:
+                this.createBalloon('red');
+                break;
+            case 1:
+                // create a small group of coins
+                this.createBalloon('blue')
+                break;
+            case 2:
+                //create a large coin group
+                this.createBalloon('green');
+                break;
+            case 3:
+                //create a large coin group
+                this.createBalloon('yellow');
+                break;
 
-                default:
-                    // if somehow we error on the cointype, set the previouscointype to zero and do nothing
-                    break;
-            }
+            default:
+                break;
+        }
     },
-
     createCoin: function () {
         var x = this.game.rnd.integerInRange(this.game.world.height - 50, 50);
         var y = 0;
 
         var coin = this.coins.getFirstExists(false);
+
         if (!coin) {
             coin = new Coin(this.game, 0, 0);
             this.coins.add(coin);
+            this.game.physics.arcade.enableBody(coin);
         }
 
         coin.reset(x, y);
@@ -269,6 +283,41 @@ IlioLostInSpace.Game.prototype = {
 
         }
     },
+
+    generateSpecialCoins: function(){
+        var coinSpawnX = 0;
+        var coinRowCounter = 0;
+        var coinColumnCounter = 0;
+        var coin;
+        var columns = 20;
+        var rows = 25;
+        for (var i = 0; i < columns * rows; i++) {
+            var x = 0;
+            var y = 0;
+            var coin = this.specialCoins.getFirstExists(false);
+
+            if (!coin) {
+                coin = new Coin(this.game, 0, 0);
+                this.specialCoins.add(coin);
+            }
+
+            coin.reset(x, y);
+            coin.specialY = coin.y - coin.height - (coinColumnCounter * coin.height) - (coinColumnCounter * this.coinSpacingY);
+            coin.specialX = coinSpawnX + (coinRowCounter * coin.width) + (coinRowCounter * this.coinSpacingX);
+            console.log("speicalx: " + coin.specialX);
+            coin.revive();
+            coin.y = coin.specialY;
+            coin.x = coin.specialX;
+            coin.body.velocity.y = 0;
+            coinColumnCounter++;
+            if (i + 1 >= columns && (i + 1) % columns === 0) {
+                coinRowCounter++;
+                coinColumnCounter = 0;
+            }
+        }
+
+    },
+
     createCoinGroup: function (columns, rows) {
         //create 4 coins in a group
         var coinSpawnX = this.game.rnd.integerInRange(50, this.game.world.width - 50);
@@ -285,10 +334,8 @@ IlioLostInSpace.Game.prototype = {
                 coinColumnCounter = 0;
             }
         }
-        this.game.physics.arcade.enableBody(coin);
 
     },
-
 
     createEnemy: function () {
         var x = this.game.width;
@@ -303,36 +350,46 @@ IlioLostInSpace.Game.prototype = {
         enemy.revive();
     },
 
-    /*groundHit: function(player, ground) {
-     player.body.velocity.y = -200;
-     },*/
 
     balloonHit: function (player, balloon) {
-        this.score++;
 
         if (balloon.color == this.playerColor) {
             this.gameSpeed += this.speedFactor;
             this.balloonSize++;
+            this.score += 2*this.balloonSize;
         }
         else {
             this.gameSpeed -= this.speedFactor;
             this.balloonSize--;
-
         }
+
+        this.balloonRate = 100/this.gameSpeed*40;
+        this.coinRate = 100/this.gameSpeed*40;
+
         if (this.balloonSize == 10) {
             //SPECIAL EFFEKT AUSLÖSEN
+            //this.balloons.addAll('body.velocity.y', 0);
+            //this.coins.addAll('body.velocity.y', 0);
+            this.balloons.visible = false;
+            this.coins.visible = false;
+           // this.gameSpeed = this.spacedUpSpeed;
             this.spacedUp = true;
             this.spacedSprite.visible = true;
+            this.specialCoins.setAll('visible', true);
         }
         else if (this.balloonSize == 0) {
             enemyHit(player, null);
         }
 
+        this.resizeBalloon.scale.setTo(this.balloonSize/10);
+        //this.resizeBalloon.scale.set(size, size);
+        this.resizeBalloon.x = (this.player.x + 10.5) - parseFloat(this.resizeBalloon.width/2).toFixed(1);
+        this.resizeBalloon.y = (this.player.y - 47) - this.resizeBalloon.height;
 
         this.coinSound.play();
         balloon.kill();
-
         var dummyBalloon = new Balloon(this.game, balloon.x, balloon.y, balloon.color);
+        balloon.destroy();
         this.game.add.existing(dummyBalloon);
 
         //dummyBalloon.animations.play('spin2', 3, true);
@@ -344,17 +401,19 @@ IlioLostInSpace.Game.prototype = {
 
         scoreTween.onComplete.add(function () {
             dummyBalloon.destroy();
-            this.scoreText.text = 'Score: ' + this.score;
+            this.scoreText.text = 'Score: ' + parseInt(this.score);
         }, this);
 
     },
+
     coinHit: function (player, coin) {
-        this.score++;
+        this.score += 2*this.gameSpeed;
         this.coinSound.play();
         coin.kill();
 
         var dummyCoin = new Coin(this.game, coin.x, coin.y);
         this.game.add.existing(dummyCoin);
+       // coin.destroy();
 
         dummyCoin.animations.play('spin', 40, true);
 
@@ -362,10 +421,33 @@ IlioLostInSpace.Game.prototype = {
 
         scoreTween.onComplete.add(function () {
             dummyCoin.destroy();
-            this.scoreText.text = 'Score: ' + this.score;
+            this.scoreText.text = 'Score: ' + parseInt(this.score);
         }, this);
 
     },
+
+    specialcoinHit: function(player, coin){
+       if(this.spacedUp == true) {
+           this.score += 15;
+           this.coinSound.play();
+           coin.visible = false;
+           var dummyCoin = new Coin(this.game, coin.x, coin.y);
+           this.game.add.existing(dummyCoin);
+
+           coin.x = coin.specialX;
+           coin.y = coin.specialY;
+
+           dummyCoin.animations.play('spin', 40, true);
+
+           var scoreTween = this.game.add.tween(dummyCoin).to({x: 50, y: 50}, 300, Phaser.Easing.Linear.NONE, true);
+
+           scoreTween.onComplete.add(function () {
+               dummyCoin.destroy();
+               this.scoreText.text = 'Score: ' + parseInt(this.score);
+           }, this);
+       }
+    },
+
     enemyHit: function (player, enemy) {
         player.kill();
         enemy.kill();
@@ -389,7 +471,26 @@ IlioLostInSpace.Game.prototype = {
 
     groundHit: function(ground, coin){
         coin.kill();
-        coin.destroy();
+        if(this.coins.length > 12){
+            coin.destroy();
+        }
+    },
+
+    balloonsGroundHit: function(ground, balloon){
+        console.log("balloongroundhit: ");
+        balloon.kill();
+        if(this.balloons.length > 12){
+            balloon.destroy();
+        }
+    },
+
+    specialcoinGroundHit: function(ground, coin){
+        this.score += this.gameSpeed;
+        this.coinSound.play();
+        coin.body.x = coin.specialX;
+        coin.body.y = coin.specialY;
+        coin.visible = false;
+
     },
 
     scrollBackground: function () {
@@ -431,37 +532,50 @@ IlioLostInSpace.Game.prototype = {
         }
 
         if(this.spacedUp){
-            this.spacedUpCount++;
-
-            if(this.spacedUpCount == 600){
+            this.spacedUpCount += this.spacedUpSpeed;
+            if(this.spacedUpCount >= (20*10 + 20*this.specialCoins.getFirstExists(true).height + this.game.height)){
                 this.spacedUp = false;
                 this.spacedUpCount = 0;
                 this.spacedSprite.visible = false;
+                //this.gameSpeed = 4.0;
+                this.balloonSize = 5;
+                this.resizeBalloon.scale.set(0.5,0.5);
+                this.resizeBalloon.x = (this.player.x + 10.5) - parseFloat(this.resizeBalloon.width/2).toFixed(1);
+                this.resizeBalloon.y = (this.player.y - 47) - this.resizeBalloon.height;
+
+
+                this.balloons.visible = true;
+                this.coins.visible = true;
+                this.specialCoins.setAll('visible', true);
             }
         }
     },
 
+    scrollSpecialCoins: function() {
+        if(this.spacedUp == true) {
+            this.specialCoins.addAll('body.y', this.spacedUpSpeed, true, true);
+        }
+    },
+
     scrollCoins: function () {
-        this.coins.addAll('body.y', this.gameSpeed);
+        this.coins.addAll('body.y', this.gameSpeed, true, true);
     },
 
     scrollBalloons: function () {
-        this.balloons.addAll('body.y', this.gameSpeed);
+        this.balloons.addAll('body.y', this.gameSpeed, true, true);
     },
-
 
     movePlayer: function () {
         var animationfly  = 'flyRed';
         var animationflyLeft  = 'flyRedLeft';
         var animationflyRight  = 'flyRedRight';
-
         switch (this.playerColor){
             case 'red':
                 break;
             case 'blue':
-                 animationfly  = 'flyBlue';
-                 animationflyLeft  = 'flyBlueLeft';
-                 animationflyRight  = 'flyBlueRight';
+                animationfly  = 'flyBlue';
+                animationflyLeft  = 'flyBlueLeft';
+                animationflyRight  = 'flyBlueRight';
                 break;
             case 'green':
                 animationfly  = 'flyGreen';
@@ -489,6 +603,7 @@ IlioLostInSpace.Game.prototype = {
                 this.resizeBalloonEnd.body.x += 5;
             }
             this.player.animations.play(animationflyRight, 8, true);
+            this.checkCollideRightBounds();
         } else if (this.leftKey.isDown) {
             if (this.spaceKey.isDown) {
                 this.player.body.x -= 25;
@@ -501,8 +616,9 @@ IlioLostInSpace.Game.prototype = {
                 this.resizeBalloonEnd.body.x -= 5;
             }
             this.player.animations.play(animationflyLeft, 8, true);
-
-        } else if (this.downKey.isDown) {
+            this.checkCollideLeftBounds();
+        }
+        /*else if (this.downKey.isDown) {
             if (this.spaceKey.isDown) {
                 this.player.body.y += 25;
                 this.resizeBalloon.body.y += 25;
@@ -514,18 +630,37 @@ IlioLostInSpace.Game.prototype = {
                 this.resizeBalloonEnd.body.y += 5;
             }
             this.player.animations.play(animationfly, 8, true);
-        }
+        }*/
         else{
             this.player.animations.play(animationfly, 8, true);
         }
+
+    },
+
+    checkCollideRightBounds: function(){
+        if((this.player.body.x + this.player.width) >= this.game.width){
+            this.player.body.x = 0;
+            this.resizeBalloon.body.x = (this.player.body.x + 37) - parseFloat(this.resizeBalloon.width/2).toFixed(1);
+            this.resizeBalloonEnd.body.x = 10.5;
+
+        }
+    },
+
+    checkCollideLeftBounds: function(){
+        if((this.player.body.x + this.player.width) <= 0){
+            this.player.body.x = this.game.width;
+            this.resizeBalloon.body.x = (this.player.body.x + 37) - parseFloat(this.resizeBalloon.width/2).toFixed(1);
+            this.resizeBalloonEnd.body.x = this.player.body.x + 10.5;
+        }
+
     },
 
     changePlayerColor: function(){
         if (this.qKey.isDown){
-           this.playerColor = 'red';
-           this.resizeBalloon.play('red');
-           this.player.animations.play('flyRed');
-            console.log("Color Red");
+            this.playerColor = 'red';
+            this.resizeBalloon.play('red');
+            this.player.animations.play('flyRed');
+
         }
         else if(this.wKey.isDown){
             this.playerColor = 'blue';
@@ -580,10 +715,5 @@ IlioLostInSpace.Game.prototype = {
         this.spacedSprite.filters = [this.filter];
         this.spacedSprite.anchor.setTo(0.5, 0.5);
     },
-
-    destroyCoins: function(coin) {
-        coin.destroy();
-        console.log("destroyed");
-    }
 
 };

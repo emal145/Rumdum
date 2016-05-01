@@ -16,6 +16,8 @@ var Coin = function(game, x, y, key, frame) {
   this.events.onKilled.add(this.onKilled, this);
   this.events.onRevived.add(this.onRevived, this);
 
+  this.specialX = 0;
+  this.specialY = 0;
 };
 
 Coin.prototype = Object.create(Phaser.Sprite.prototype);
@@ -23,7 +25,7 @@ Coin.prototype.constructor = Coin;
 
 Coin.prototype.onRevived = function() {
   //this.body.velocity.x = -400;
-  this.body.velocity.y = 60;
+  this.body.velocity.y = 0;
   this.animations.play('spin', 10, true);
 };
 
