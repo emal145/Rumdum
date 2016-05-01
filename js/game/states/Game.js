@@ -7,7 +7,8 @@ IlioLostInSpace.Game = function () {
 
     this.balloonRate = 900;
     this.balloonTimer = 0;
-
+    this.resizeRate = 1000;
+    this.resizeTimer = 0;
     this.enemyRate = 500;
     this.enemyTimer = 0;
 
@@ -28,6 +29,7 @@ IlioLostInSpace.Game = function () {
     this.spacedSprite;
     this.spacedUpCount = 0;
     this.spacedUp = false;
+    this.playerColorNumber = 0;
 };
 
 IlioLostInSpace.Game.prototype = {
@@ -75,6 +77,7 @@ IlioLostInSpace.Game.prototype = {
         this.scrollBalloons();
         this.movePlayer();
         this.changePlayerColor();
+
         if (this.spacedUp == false) {
             if (this.coinTimer < this.game.time.now) {
                 this.generateCoins();
@@ -85,6 +88,13 @@ IlioLostInSpace.Game.prototype = {
                 this.generateBalloon();
                 this.balloonTimer = this.game.time.now + this.balloonRate;
             }
+
+            if (this.resizeTimer < this.game.time.now) {
+                this.minimizeResizeBalloon();
+                this.resizeTimer = this.game.time.now + this.resizeRate;
+            }
+
+
         }
         else{
             //SPECIAL COINS MUSTER GENERIEREN
@@ -131,10 +141,12 @@ IlioLostInSpace.Game.prototype = {
         this.leftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
         this.rightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
         this.spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-        this.qKey = game.input.keyboard.addKey(Phaser.Keyboard.Q);
+        this.cKey = game.input.keyboard.addKey(Phaser.Keyboard.C);
+        /*this.qKey = game.input.keyboard.addKey(Phaser.Keyboard.Q);
         this.wKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
         this.eKey = game.input.keyboard.addKey(Phaser.Keyboard.E);
         this.rKey = game.input.keyboard.addKey(Phaser.Keyboard.R);
+        */
 
     },
 
@@ -493,6 +505,19 @@ IlioLostInSpace.Game.prototype = {
 
     },
 
+    minimizeResizeBalloon: function(){
+        this.balloonSize--;
+        if(this.balloonSize >= 0) {
+            var newscale = this.balloonSize / 10;
+            this.resizeBalloon.scale.set(newscale, newscale);
+            this.resizeBalloon.x = (this.player.x + 10.5) - parseFloat(this.resizeBalloon.width / 2).toFixed(1);
+            this.resizeBalloon.y = (this.player.y - 47) - this.resizeBalloon.height;
+        }
+        else{
+            this.enemyHit(this.player,null);
+        }
+    },
+
     scrollBackground: function () {
         var ykoordinate = 0;
         var ystartkoordinate = 0;
@@ -656,28 +681,49 @@ IlioLostInSpace.Game.prototype = {
     },
 
     changePlayerColor: function(){
-        if (this.qKey.isDown){
-            this.playerColor = 'red';
-            this.resizeBalloon.play('red');
-            this.player.animations.play('flyRed');
-
-        }
-        else if(this.wKey.isDown){
-            this.playerColor = 'blue';
-            this.resizeBalloon.play('blue');
-            this.player.animations.play('flyBlue');
-        }
-        else if(this.eKey.isDown){
-            this.playerColor = 'green';
-            this.resizeBalloon.play('green');
-            this.player.animations.play('flyGreen');
-        }
-        else if(this.rKey.isDown){
-            this.playerColor = 'yellow';
-            this.resizeBalloon.play('yellow');
-            this.player.animations.play('flyYellow');
+        if (this.cKey.isDown) {
+            if (this.colorChanged == false) {
+                switch (this.playerColorNumber % 4) {
+                    case 0:
+                        this.playerColorNumber = 1;
+                        break;
+                    case 1:
+                        this.playerColorNumber = 2;
+                        break;
+                    case 2:
+                        this.playerColorNumber = 3;
+                        break;
+                    case 3:
+                        this.playerColorNumber = 4;
+                        break;
+                }
+                this.colorChanged = true;
+            }
         }
 
+        if(this.cKey.isUp){
+            if(this.colorChanged == true){
+                switch (this.playerColorNumber % 4) {
+                    case 0:
+                          this.playerColor = 'red';
+                        this.resizeBalloon.play('red');
+                        break;
+                    case 1:
+                          this.playerColor = 'blue';
+                        this.resizeBalloon.play('blue');
+                        break;
+                    case 2:
+                         this.playerColor = 'green';
+                        this.resizeBalloon.play('green');
+                        break;
+                    case 3:
+                        this.playerColor = 'yellow';
+                        this.resizeBalloon.play('yellow');
+                        break;
+                }
+            }
+            this.colorChanged = false;
+        }
     },
 
     createFilter: function () {
