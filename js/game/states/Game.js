@@ -4,16 +4,15 @@ IlioLostInSpace.Game = function() {
 
     this.coinRate = 1000;
     this.coinTimer = 0;
-
+    this.score = 0;
     this.balloonRate = 600;
     this.balloonTimer = 0;
 
     this.enemyRate = 500;
   this.enemyTimer = 0;
 
-  this.score = 0;
   this.previousCoinType = null;
-
+    this.highscore = this.game.state.Highscore;
   this.coinSpawnY = null;
   this.coinSpacingX = 10;
   this.coinSpacingY = 10;
@@ -25,8 +24,12 @@ IlioLostInSpace.Game = function() {
 };
 
 IlioLostInSpace.Game.prototype = {
-  create: function() {
 
+
+
+
+  create: function() {
+    this.high
     this.upKey = game.input.keyboard.addKey(Phaser.Keyboard.UP);
     this.downKey = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
     this.leftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
@@ -50,7 +53,7 @@ IlioLostInSpace.Game.prototype = {
       this.player.animations.add('flyRight', [1]);
 
       this.game.physics.startSystem(Phaser.Physics.ARCADE);
-    this.game.physics.arcade.gravity.y = -9.81;
+    this.game.physics.arcade.gravity.y = 5.81;
 
 
 
@@ -82,27 +85,7 @@ IlioLostInSpace.Game.prototype = {
       this.movePlayer();
 
 
-    //if(this.upKey.isDown) {
-    //  this.player.body.velocity.y -= 25;
-    //  if(!this.jetSound.isPlaying) {
-    //    this.jetSound.play('', 0, true, 0.5);
-    //  }
-    //} else {
-    //  this.jetSound.stop();
-    //}
 
-    //if( this.player.body.velocity.y < 0 || this.upKey.isDown) {
-    //  if(this.player.angle > 0) {
-    //    this.player.angle = 0;
-    //  }
-    //  if(this.player.angle > this.playerMinAngle) {
-    //    this.player.angle -= 0.5;
-    //  }
-    //} else if(this.player.body.velocity.y >=0 && !this.game.input.activePointer.idDown) {
-    //  if(this.player.angle < this.playerMaxAngle) {
-    //    this.player.angle += 0.5;
-    //  }
-    //}
 
       if(this.coinTimer < this.game.time.now) {
           this.generateCoins();
@@ -117,10 +100,10 @@ IlioLostInSpace.Game.prototype = {
       }
 
 
-      /*if(this.enemyTimer < this.game.time.now) {
+      if(this.enemyTimer < this.game.time.now) {
         this.createEnemy();
         this.enemyTimer = this.game.time.now + this.enemyRate;
-      }*/
+      }
 
 
    // this.game.physics.arcade.collide(this.player, this.ground, this.groundHit, null, this);
@@ -283,13 +266,11 @@ IlioLostInSpace.Game.prototype = {
     enemy.revive();
   },
 
-    /*groundHit: function(player, ground) {
+    groundHit: function(player, ground) {
     player.body.velocity.y = -200;
-  },*/
+  },
 
     balloonHit: function(player, balloon) {
-        this.score++;
-        this.coinSound.play();
         balloon.kill();
 
         var dummyBalloon = new Balloon(this.game, balloon.x, balloon.y, balloon.color);
@@ -297,12 +278,9 @@ IlioLostInSpace.Game.prototype = {
 
         //dummyBalloon.animations.play('spin2', 3, true);
 
-        var scoreTween = this.game.add.tween(dummyBalloon).to({x: balloon.x, y: balloon.y+50}, 300, Phaser.Easing.Linear.NONE, true);
+        dummyBalloon.destroy();
 
-      scoreTween.onComplete.add(function() {
-            dummyBalloon.destroy();
-            this.scoreText.text = 'Score: ' + this.score;
-        }, this);
+
 
     },
     coinHit: function(player, coin) {
@@ -331,7 +309,6 @@ IlioLostInSpace.Game.prototype = {
     this.gameMusic.stop();
     
     //this.ground.stopScroll();
-    this.backgroundMenue.stopScroll();
     //this.foreground.stopScroll();
 
     this.enemies.setAll('body.velocity.x', 0);
@@ -340,8 +317,10 @@ IlioLostInSpace.Game.prototype = {
     this.enemyTimer = Number.MAX_VALUE;
     this.coinTimer = Number.MAX_VALUE;
 
-    var scoreboard = new Scoreboard(this.game);
-    scoreboard.show(this.score);
+    //var scoreboard = new Scoreboard(this.game);
+    //scoreboard.show(this.score);
+
+
   },
 
   scrollBackground: function() {
@@ -358,12 +337,14 @@ IlioLostInSpace.Game.prototype = {
   movePlayer: function() {
 
     if(this.rightKey.isDown) {
-      this.player.body.velocity.x += 5;
+      this.player.body.x += 5;
     }else if(this.leftKey.isDown) {
-      this.player.body.velocity.x -=5;
+      this.player.body.x -=5;
     }else if (this.downKey.isDown) {
-      this.player.body.velocity.y ++;
+      this.player.body.y ++;
 
+    }else if (this.upKey.isDown) {
+        this.player.body.y--;
     }
 
   }

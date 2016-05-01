@@ -43,6 +43,8 @@ Scoreboard.prototype.show = function(score) {
   startText.x = this.game.width / 2 - (startText.textWidth / 2);  
   this.add(startText);
 
+
+
   if(isNewHighScore) {
     newHighScoreText = this.game.add.bitmapText(0, 100, 'minecraftia', 'New High Score!', 12);
     newHighScoreText.tint = 0x4ebef7; // '#4ebef7'
