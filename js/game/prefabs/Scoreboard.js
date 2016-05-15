@@ -1,5 +1,5 @@
 var Scoreboard = function(game) {
-  Phaser.Group.call(this, game);
+  Phaser.Group.call (this, game);
 };
 
 Scoreboard.prototype = Object.create(Phaser.Group.prototype);

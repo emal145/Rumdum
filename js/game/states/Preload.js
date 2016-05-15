@@ -74,11 +74,11 @@ IlioLostInSpace.Preload.prototype = {
   create: function() {
     this.preloadBar.cropEnabled = false;
     this.game.add.existing(this.loadingText);
-  }, 
+  },
   update: function() {
-    //if(this.cache.isSoundDecoded('gameMusic') && this.ready === true) {
+   // if(this.cache.isSoundDecoded('gameMusic') && this.ready === true) {
       this.state.start('MainMenu');
-    //}
+   // }
 
   },
   onLoadComplete: function() {
