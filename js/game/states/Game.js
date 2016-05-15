@@ -21,10 +21,11 @@ IlioLostInSpace.Game = function () {
     this.coinSpacingY = 10;
     this.backgroundMax = 5;
     this.backgroundCounter = 0;
-    this.levelstage = 1;
+    this.levelstage = 2;
     this.gameSpeed = 4.0;
     this.playerColor = 'red';
     this.balloonSize = 5;
+    this.balloonsCounter = 0;
     this.speedFactor = 0.3;
     this.filter;
     this.spacedSprite;
@@ -110,6 +111,13 @@ IlioLostInSpace.Game.prototype = {
                if(this.enemyTimer < this.game.time.now) {
                    if(this.levelstage == 1){
                        this.createEnemyBird();
+                       this.enemyRate = this.game.rnd.integerInRange(3000, 6000);
+                   }else if(this.levelstage == 2){
+                       this.createEnemyPlane();
+                       this.enemyRate = this.game.rnd.integerInRange(3000, 6000);
+                   }
+                   else if(this.levelstage == 3){
+                       this.createEnemyMeteor();
                        this.enemyRate = this.game.rnd.integerInRange(3000, 6000);
                    }
                    this.enemyTimer = this.game.time.now + this.enemyRate;
@@ -336,7 +344,6 @@ IlioLostInSpace.Game.prototype = {
             coin.reset(x, y);
             coin.specialY = coin.y - coin.height - (coinColumnCounter * coin.height) - (coinColumnCounter * this.coinSpacingY);
             coin.specialX = coinSpawnX + (coinRowCounter * coin.width) + (coinRowCounter * this.coinSpacingX);
-            console.log("speicalx: " + coin.specialX);
             coin.revive();
             coin.y = coin.specialY;
             coin.x = coin.specialX;
@@ -382,6 +389,32 @@ IlioLostInSpace.Game.prototype = {
         enemy.revive();
     },
 
+    createEnemyPlane: function () {
+        var y = -50;
+        var x = this.game.rnd.integerInRange(50, this.game.world.width - (this.player.x + this.player.width));
+
+        var enemy = this.enemies.getFirstExists(false);
+        if (!enemy) {
+            enemy = new EnemyPlane(this.game, 0, 0);
+            this.enemies.add(enemy);
+        }
+        enemy.reset(x, y);
+        enemy.revive();
+    },
+
+    createEnemyMeteor: function () {
+        var y = -50;
+        var x = this.game.rnd.integerInRange(50, this.game.world.width - (this.player.x + this.player.width));
+
+        var enemy = this.enemies.getFirstExists(false);
+        if (!enemy) {
+            enemy = new EnemyMeteor(this.game, 0, 0);
+            this.enemies.add(enemy);
+        }
+        enemy.reset(x, y);
+        enemy.revive();
+    },
+
 
     balloonHit: function (player, balloon) {
 
@@ -389,20 +422,23 @@ IlioLostInSpace.Game.prototype = {
             this.gameSpeed += this.speedFactor;
             this.balloonSize++;
             this.score += 2*this.balloonSize;
+            this.balloonsCounter++;
         }
         else {
             this.gameSpeed -= this.speedFactor;
             this.balloonSize--;
+            this.balloonsCounter = 0;
         }
 
         this.resizeSize = parseFloat(this.balloonSize).toFixed(1);
         this.balloonRate = 100/this.gameSpeed*40;
         this.coinRate = 100/this.gameSpeed*40;
 
-        if (this.balloonSize == 10) {
+        if (this.balloonsCounter == 2) {
             //SPECIAL EFFEKT AUSLÖSEN
             this.balloons.visible = false;
             this.coins.visible = false;
+            this.enemies.callAll('enemyHit');
             this.spacedUp = true;
             this.spacedSprite.visible = true;
             this.specialCoins.setAll('visible', true);
@@ -433,7 +469,6 @@ IlioLostInSpace.Game.prototype = {
             dummyBalloon.destroy();
             this.scoreText.text = 'Score: ' + parseInt(this.score);
         }, this);
-
     },
 
     coinHit: function (player, coin) {
@@ -453,7 +488,6 @@ IlioLostInSpace.Game.prototype = {
             dummyCoin.destroy();
             this.scoreText.text = 'Score: ' + parseInt(this.score);
         }, this);
-
     },
 
     specialcoinHit: function(player, coin){
@@ -484,8 +518,7 @@ IlioLostInSpace.Game.prototype = {
         this.resizeBalloon.kill();
         this.resizeBalloonEnd.body.velocity.y = 300;
         enemy.kill();
-
-       this.gameOverNow();
+        this.gameOverNow();
     },
 
     groundHit: function(ground, coin){
@@ -496,7 +529,6 @@ IlioLostInSpace.Game.prototype = {
     },
 
     balloonsGroundHit: function(ground, balloon){
-        console.log("balloongroundhit: ");
         balloon.kill();
         if(this.balloons.length > 12){
             balloon.destroy();
@@ -505,11 +537,9 @@ IlioLostInSpace.Game.prototype = {
 
     specialcoinGroundHit: function(ground, coin){
         this.score += this.gameSpeed;
-        this.coinSound.play();
         coin.body.x = coin.specialX;
         coin.body.y = coin.specialY;
-        coin.visible = false;
-
+        coin.visible = true;
     },
 
     minimizeResizeBalloon: function(){
@@ -567,12 +597,13 @@ IlioLostInSpace.Game.prototype = {
 
             if (this.spacedUp) {
                 this.spacedUpCount += this.spacedUpSpeed;
-                if (this.spacedUpCount >= (20 * 10 + 20 * this.specialCoins.getFirstExists(true).height + this.game.height)) {
+                if (this.spacedUpCount >= (150 * 10 + 20 * this.specialCoins.getFirstExists(true).height + this.game.height)) {
                     this.spacedUp = false;
                     this.spacedUpCount = 0;
                     this.spacedSprite.visible = false;
                     //this.gameSpeed = 4.0;
                     this.balloonSize = 5;
+                    this.balloonsCounter = 0;
                     this.resizeBalloon.scale.set(0.5, 0.5);
                     this.resizeBalloon.x = (this.player.x + 10.5) - parseFloat(this.resizeBalloon.width / 2).toFixed(1);
                     this.resizeBalloon.y = (this.player.y - 47) - this.resizeBalloon.height;
@@ -580,7 +611,7 @@ IlioLostInSpace.Game.prototype = {
 
                     this.balloons.visible = true;
                     this.coins.visible = true;
-                    this.specialCoins.setAll('visible', true);
+                    this.specialCoins.setAll('visible', false);
                 }
             }
         }

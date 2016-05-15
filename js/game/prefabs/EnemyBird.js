@@ -22,10 +22,10 @@ EnemyBird.prototype.constructor = EnemyBird;
 
 EnemyBird.prototype.onRevived = function() {
   
-  this.game.add.tween(this).to({y: this.y + 16}, 500, Phaser.Easing.Linear.NONE, true, 0, Infinity, true);
+  //this.game.add.tween(this).to({y: this.y + 25}, game.height, Phaser.Easing.Linear.NONE, true, 0, Infinity, true);
 
   this.body.velocity.x = 100;
- // this.body.velocity.y = 100;
+ this.body.velocity.y = 100;
   this.animations.play('fly', 10, true);
 };
 

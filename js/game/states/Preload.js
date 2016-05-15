@@ -42,6 +42,8 @@ IlioLostInSpace.Preload.prototype = {
       this.load.spritesheet('resizeBalloon', 'assets/images/SingleCollectBalloons_old.png', 150, 150, 4);
       this.load.spritesheet('resizeBalloonEnd', 'assets/images/SingleCollectBalloonsEnd.png', 75, 75, 4);
       this.load.spritesheet('bird', 'assets/images/Bird.png', 50, 41, 15);
+      this.load.spritesheet('plane', 'assets/images/plane.png', 63.75, 52, 16);
+      this.load.spritesheet('meteor', 'assets/images/Meteor.png', 50, 38, 15);
   },
 
   preload: function() {
