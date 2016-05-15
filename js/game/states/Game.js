@@ -802,8 +802,60 @@ IlioLostInSpace.Game.prototype = {
 
      this.enemyTimer = Number.MAX_VALUE;
      this.coinTimer = Number.MAX_VALUE;
-
+     this.score = parseInt(this.score);
+     localStorage.setItem('score', this.score);
      var scoreboard = new Scoreboard(this.game);
      scoreboard.show(parseInt(this.score));
- }
+     this.setLeaderboard();
+     this.score = 0;
+
+
+ },
+
+    setLeaderboard: function() {
+
+        var highscoreArray = [];
+        //this.score = localStorage.getItem('score');
+        highscoreArray = JSON.parse(localStorage.getItem('highscoreArray'));
+
+        if(!highscoreArray) {
+            highscoreArray = [];
+            highscoreArray.push(this.score);
+            localStorage.setItem('highscoreArray',JSON.stringify(highscoreArray));
+        } else {
+            var sortArray = [];
+            var sortArrayCounter = 0;
+            var scoreSet = false;
+            for (var i=0; i < 10; i++) {
+
+                if (sortArrayCounter < 10) {
+
+                    if (parseInt(highscoreArray[i]) > parseInt(this.score)) {
+
+                        sortArray.push(highscoreArray[i]);
+                        sortArrayCounter++;
+
+                    } else {
+
+                        if (!scoreSet) {
+                            sortArray.push(this.score);
+                            sortArrayCounter++;
+                            scoreSet = true;
+                            i--;
+                        }
+                        else{
+                            sortArray.push(highscoreArray[i]);
+                            sortArrayCounter++;
+                        }
+                    }
+                }
+            }
+
+            localStorage.setItem('highscoreArray',JSON.stringify(sortArray));
+
+
+        }
+
+    },
+
 };
