@@ -3,36 +3,7 @@ IlioLostInSpace.MainMenu = function() {
 
 };
 
-//IlioLostInSpace.MainMenu.addMenuOption = function(text, callback) {
-//
-//
-//    var optionStyle = { font: '30pt TheMinion', fill: 'red', align: 'left', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
-//    var txt = this.game.add.text(game.world.centerX, (this.optionCount * 100) + 200, text, optionStyle);
-//    txt.anchor.setTo(0.5);
-//    txt.stroke = "black";
-//    txt.strokeThickness = 12;
-//    var onOver = function (target) {
-//      target.fill = "#FEFFD5";
-//      target.stroke = "rgba(200,200,200,0.5)";
-//      txt.useHandCursor = true;
-//    };
-//    var onOut = function (target) {
-//      target.fill = "red";
-//      target.stroke = "black";
-//      txt.useHandCursor = false;
-//    };
-//    //txt.useHandCursor = true;
-//    txt.inputEnabled = true;
-//    txt.events.onInputUp.add(callback, this);
-//    txt.events.onInputOver.add(onOver, this);
-//    txt.events.onInputOut.add(onOut, this);
-//
-//    this.optionCount ++;
-//
-//
-//
-//
-//};
+
 
 IlioLostInSpace.MainMenu.prototype = {
 
@@ -41,7 +12,7 @@ IlioLostInSpace.MainMenu.prototype = {
     var optionStyle = { font: '25pt TheMinion', fill: 'red', align: 'left', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
     var txt = game.add.text(game.world.centerX, (this.optionCount * 60) + 300, text, optionStyle);
     txt.anchor.setTo(0.5);
-    txt.stroke = "black";
+    txt.stroke = "white";
     txt.strokeThickness = 12;
     var onOver = function (target) {
       target.fill = "#FEFFD5";
@@ -50,7 +21,7 @@ IlioLostInSpace.MainMenu.prototype = {
     };
     var onOut = function (target) {
       target.fill = "red";
-      target.stroke = "black";
+      target.stroke = "white";
       txt.useHandCursor = false;
     };
     //txt.useHandCursor = true;
@@ -64,11 +35,11 @@ IlioLostInSpace.MainMenu.prototype = {
   },
 
   addTitle: function(text) {
-    var optionStyle = { font: '30pt TheMinion', fill: 'white', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
+    var optionStyle = { font: '30pt TheMinion', fill: '#ffff00', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
     var txt = game.add.text(game.world.centerX,  200, text, optionStyle);
     txt.anchor.setTo(0.5);
-    txt.stroke = "black";
-    txt.strokeThickness = 8;
+    txt.stroke = "grey";
+    txt.strokeThickness = 4;
 
 
     this.optionCount ++;
@@ -80,18 +51,18 @@ IlioLostInSpace.MainMenu.prototype = {
     this.optionCount = 1;
   },
   create: function() {
-    this.backgroundMenue = this.game.add.sprite(0,0,'menueBackground');
-    this.backgroundMenue.height = this.game.height;
-    this.backgroundMenue.width = this.game.width;
+    //this.backgroundMenue = this.game.add.sprite(0,0,'menueBackground');
+    this.game.stage.backgroundColor = '#00000';
+
+    //this.backgroundMenue.height = this.game.height;
+    //this.backgroundMenue.width = this.game.width;
     //Hintergrundbild f�r das Men� wird geladen und an die H�he und Breite des Spielfensters angepasst
     //this.backgroundMenue = this.game.add.tileSprite(0, this.game.height-600, 600, 600, 'backgroundMenue');
     //Hintergrundbild f�r das Men� wird geladen und an die H�he und Breite des Spielfensters angepasst
 
     this.titleMusic = this.game.add.audio('titleMusic');
     this.titleMusic.play('',0,1,true,true);
-    //this.ground = this.game.add.tileSprite(0, this.game.height - 73, this.game.width, 73, 'ground');
-    //this.ground.autoScroll(-400, 0);
-    //this.addTitle('ILIOS Lost in Space');
+
 
     this.addMenuOption('Spiel Starten', function() {
 

@@ -45,6 +45,7 @@ IlioLostInSpace.Highscore.prototype = {
 
     create: function() {
 
+
         this.backgroundMenue = this.game.add.sprite(0,0,'menueBackground');
         this.backgroundMenue.height = this.game.height;
         this.backgroundMenue.width = this.game.width;

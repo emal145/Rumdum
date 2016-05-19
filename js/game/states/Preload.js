@@ -62,7 +62,7 @@ IlioLostInSpace.Preload.prototype = {
 
     this.load.setPreloadSprite(this.preloadBar,0);
 
-   this.loadImages();
+    this.loadImages();
     this.loadSprites();
     this.loadAudio();
     this.loadFonts();
