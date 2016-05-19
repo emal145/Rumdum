@@ -247,7 +247,7 @@ IlioLostInSpace.Game.prototype = {
 
     generateBalloon: function () {
 
-        var balloonType = this.game.rnd.integer() % 4;
+        var balloonType = this.game.rnd.integer() % 3;
         switch (balloonType) {
             case 0:
                 this.createBalloon('red');
@@ -260,10 +260,10 @@ IlioLostInSpace.Game.prototype = {
                 //create a large coin group
                 this.createBalloon('green');
                 break;
-            case 3:
+            //case 3:
                 //create a large coin group
-                this.createBalloon('yellow');
-                break;
+            //    this.createBalloon('yellow');
+            //    break;
 
             default:
                 break;
@@ -658,12 +658,12 @@ IlioLostInSpace.Game.prototype = {
                 animationflyLeft  = 'flyGreenLeft';
                 animationflyRight  = 'flyGreenRight';
                 break;
-            case 'yellow':
+           /* case 'yellow':
                 animationfly  = 'flyYellow';
                 animationflyLeft  = 'flyYellowLeft';
                 animationflyRight  = 'flyYellowRight';
                 break;
-
+*/
             default:
                 break;
         }
@@ -747,7 +747,7 @@ IlioLostInSpace.Game.prototype = {
     changePlayerColor: function(){
         if (this.cKey.isDown) {
             if (this.colorChanged == false) {
-                switch (this.playerColorNumber % 4) {
+                switch (this.playerColorNumber % 3) {
                     case 0:
                         this.playerColorNumber = 1;
                         break;
@@ -757,9 +757,9 @@ IlioLostInSpace.Game.prototype = {
                     case 2:
                         this.playerColorNumber = 3;
                         break;
-                    case 3:
+                    /*case 3:
                         this.playerColorNumber = 4;
-                        break;
+                        break;*/
                 }
                 this.colorChanged = true;
             }
@@ -767,7 +767,7 @@ IlioLostInSpace.Game.prototype = {
 
         if(this.cKey.isUp){
             if(this.colorChanged == true){
-                switch (this.playerColorNumber % 4) {
+                switch (this.playerColorNumber % 3) {
                     case 0:
                           this.playerColor = 'red';
                         this.resizeBalloon.play('red');
@@ -780,10 +780,10 @@ IlioLostInSpace.Game.prototype = {
                          this.playerColor = 'green';
                         this.resizeBalloon.play('green');
                         break;
-                    case 3:
+                    /*case 3:
                         this.playerColor = 'yellow';
                         this.resizeBalloon.play('yellow');
-                        break;
+                        break;*/
                 }
             }
             this.colorChanged = false;
