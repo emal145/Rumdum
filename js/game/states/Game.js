@@ -12,6 +12,7 @@ IlioLostInSpace.Game = function () {
     this.resizeTimer = 0;
     this.enemyRate = 3000;
     this.enemyTimer = 0;
+    this.maxBallonCounter = 5; //Anzahl der einzusammelnden Ballons für das Special Level
 
     this.score = 0;
     this.previousCoinType = null;
@@ -21,7 +22,7 @@ IlioLostInSpace.Game = function () {
     this.coinSpacingY = 10;
     this.backgroundMax = 5;
     this.backgroundCounter = 0;
-    this.levelstage = 2;
+    this.levelstage = 1;
     this.gameSpeed = 4.0;
     this.playerColor = 'red';
     this.balloonSize = 5;
@@ -331,8 +332,8 @@ IlioLostInSpace.Game.prototype = {
         var coinRowCounter = 0;
         var coinColumnCounter = 0;
         var coin;
-        var columns = 20;
-        var rows = 25;
+        var columns = 20; //Row und Column sind vertauscht
+        var rows = 25; //Row und Column sind vertauscht
         for (var i = 0; i < columns * rows; i++) {
             var x = 0;
             var y = 0;
@@ -437,12 +438,13 @@ IlioLostInSpace.Game.prototype = {
         this.balloonRate = 100/this.gameSpeed*40;
         this.coinRate = 100/this.gameSpeed*40;
 
-        if (this.balloonsCounter == 2) {
+        if (this.balloonsCounter == this.maxBallonCounter) {
             //SPECIAL EFFEKT AUSLÖSEN
             this.balloons.visible = false;
             this.coins.visible = false;
             this.enemies.callAll('enemyHit');
             this.spacedUp = true;
+            this.generateSpecialCoins();
             this.spacedSprite.visible = true;
             this.specialCoins.setAll('visible', true);
         }
@@ -497,13 +499,15 @@ IlioLostInSpace.Game.prototype = {
        if(this.spacedUp == true) {
            this.score += 15;
            this.coinSound.play();
-           coin.visible = false;
+           //coin.visible = false;
            var dummyCoin = new Coin(this.game, coin.x, coin.y);
            this.game.add.existing(dummyCoin);
 
-           coin.x = coin.specialX;
-           coin.y = coin.specialY;
+           //coin.x = coin.specialX;
+           //coin.y = coin.specialY - (this.game.height - coin.y);
 
+           coin.kill();
+           coin.destroy();
            dummyCoin.animations.play('spin', 40, true);
 
            var scoreTween = this.game.add.tween(dummyCoin).to({x: 50, y: 50}, 300, Phaser.Easing.Linear.NONE, true);
@@ -539,10 +543,12 @@ IlioLostInSpace.Game.prototype = {
     },
 
     specialcoinGroundHit: function(ground, coin){
-        this.score += this.gameSpeed;
-        coin.body.x = coin.specialX;
-        coin.body.y = coin.specialY;
-        coin.visible = true;
+       // coin.body.x = coin.specialX;
+       // coin.body.y = coin.specialY - (this.game.height - coin.y);
+       // coin.visible = true;
+        coin.kill();
+        coin.destroy();
+
     },
 
     minimizeResizeBalloon: function(){
@@ -600,7 +606,7 @@ IlioLostInSpace.Game.prototype = {
 
             if (this.spacedUp) {
                 this.spacedUpCount += this.spacedUpSpeed;
-                if (this.spacedUpCount >= (150 * 10 + 20 * this.specialCoins.getFirstExists(true).height + this.game.height)) {
+                if (this.spacedUpCount >= (30 * 10 + 20 * 20 + this.game.height)) {
                     this.spacedUp = false;
                     this.spacedUpCount = 0;
                     this.spacedSprite.visible = false;
@@ -610,7 +616,6 @@ IlioLostInSpace.Game.prototype = {
                     this.resizeBalloon.scale.set(0.5, 0.5);
                     this.resizeBalloon.x = (this.player.x + 10.5) - parseFloat(this.resizeBalloon.width / 2).toFixed(1);
                     this.resizeBalloon.y = (this.player.y - 47) - this.resizeBalloon.height;
-
 
                     this.balloons.visible = true;
                     this.coins.visible = true;
