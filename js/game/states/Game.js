@@ -34,6 +34,7 @@ IlioLostInSpace.Game = function () {
     this.spacedUp = false;
     this.playerColorNumber = 0;
     this.gameisOver = false;
+    this.enemysStart = false;
 };
 
 IlioLostInSpace.Game.prototype = {
@@ -111,7 +112,7 @@ IlioLostInSpace.Game.prototype = {
                }
 
                if(this.enemyTimer < this.game.time.now) {
-                   if(this.levelstage == 1){
+                   if(this.levelstage == 1 && this.enemysStart){
                        this.createEnemyBird();
                        this.enemyRate = this.game.rnd.integerInRange(3000, 6000);
                    }else if(this.levelstage == 2){
@@ -390,10 +391,11 @@ IlioLostInSpace.Game.prototype = {
         }
         if(enemyFlip == 0 ){
             enemy.flip = true;
+            enemy.reset(this.game.width + (x*-1), y);
         }else{
             enemy.flip = false;
+            enemy.reset(x, y);
         }
-        enemy.reset(x, y);
         enemy.revive();
     },
 
@@ -410,10 +412,11 @@ IlioLostInSpace.Game.prototype = {
         }
         if(enemyFlip == 0 ){
             enemy.flip = true;
+            enemy.reset(this.game.width + (x*-1), y);
         }else{
             enemy.flip = false;
+            enemy.reset(x, y);
         }
-        enemy.reset(x, y);
         enemy.revive();
     },
 
@@ -606,7 +609,10 @@ IlioLostInSpace.Game.prototype = {
             }
 
             this.backgroundTile.tilePosition.y += bgSpeed;
-
+            //Enemys erst nach einem start vorsprung starten
+            if(this.backgroundTile.tilePosition.y >= 600){
+                this.enemysStart = true;
+            }
             if (this.backgroundTile.tilePosition.y >= ykoordinate - bgSpeed) {
                 this.backgroundCounter++;
                 if (this.backgroundCounter == this.backgroundMax) {
@@ -854,7 +860,7 @@ IlioLostInSpace.Game.prototype = {
 
      this.enemies.setAll('body.velocity.x', 0);
      this.coins.setAll('body.velocity.x', 0);
-
+     this.levelstage = 1;
      this.enemyTimer = Number.MAX_VALUE;
      this.coinTimer = Number.MAX_VALUE;
      this.score = parseInt(this.score);
