@@ -38,8 +38,8 @@ IlioLostInSpace.MainMenu.prototype = {
 
 
   addMenuOption: function(text, callback) {
-    var optionStyle = { font: '30pt TheMinion', fill: 'red', align: 'left', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
-    var txt = game.add.text(game.world.centerX, (this.optionCount * 100) + 100, text, optionStyle);
+    var optionStyle = { font: '25pt TheMinion', fill: 'red', align: 'left', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
+    var txt = game.add.text(game.world.centerX, (this.optionCount * 60) + 250, text, optionStyle);
     txt.anchor.setTo(0.5);
     txt.stroke = "black";
     txt.strokeThickness = 12;
@@ -64,12 +64,12 @@ IlioLostInSpace.MainMenu.prototype = {
   },
 
   addTitle: function(text) {
-    var optionStyle = { font: '30pt TheMinion', fill: 'red', align: 'left', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
-    var txt = game.add.text(game.world.centerX,  50, text, optionStyle);
+    var optionStyle = { font: '30pt TheMinion', fill: '#e9741e', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
+    var txt = game.add.text(game.world.centerX,  200, text, optionStyle);
     txt.anchor.setTo(0.5);
     txt.stroke = "black";
-    txt.strokeThickness = 12;
-    txt.inputEnabled = true;
+    txt.strokeThickness = 8;
+
 
     this.optionCount ++;
 
@@ -91,9 +91,9 @@ IlioLostInSpace.MainMenu.prototype = {
     this.titleMusic.play('',0,1,true,true);
     //this.ground = this.game.add.tileSprite(0, this.game.height - 73, this.game.width, 73, 'ground');
     //this.ground.autoScroll(-400, 0);
-    this.addTitle('ILIOS Lost in Space');
+    //this.addTitle('ILIOS Lost in Space');
 
-    this.addMenuOption('Start Game', function() {
+    this.addMenuOption('Spiel Starten', function() {
 
       this.game.state.start('Game');
       this.titleMusic.stop();
@@ -105,9 +105,13 @@ IlioLostInSpace.MainMenu.prototype = {
 
 
     });
-    this.addMenuOption('Exit Game', function() {
+    this.addMenuOption('Spiel Beenden', function() {
 
-      this.game.state.start('Game');
+
+        if (confirm("Wirklich Beenden?")) {
+          window.close();
+        }
+
 
     });
 
@@ -121,9 +125,10 @@ IlioLostInSpace.MainMenu.prototype = {
 
     //this.game.add.tween(this.player).to({y: this.player.y - 16}, 500, Phaser.Easing.Linear.NONE, true, 0, Infinity, true);
 
-    //this.menuTitle = this.add.sprite(this.game.world.centerX, this.game.world.centerY - 200, 'logo');
-    //this.menuTitle.anchor.setTo(0.5);
-    //this.menuTitle.scale.setTo(0.5);
+    this.menuTitle = this.add.sprite(this.game.world.centerX, this.game.world.centerY - 200, 'logo');
+    this.menuTitle.anchor.setTo(0.5);
+    this.menuTitle.scale.setTo(1);
+    this.addTitle("Illios Lost in Space");
 
 
 

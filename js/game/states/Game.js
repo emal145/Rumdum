@@ -37,6 +37,8 @@ IlioLostInSpace.Game = function () {
 
 IlioLostInSpace.Game.prototype = {
     create: function () {
+
+
         this.game.world.bound = new Phaser.Rectangle(0, 0, this.game.width + 300, this.game.height);
         this.initializeKeys();
 
