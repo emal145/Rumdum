@@ -22,7 +22,7 @@ IlioLostInSpace.Game = function () {
     this.coinSpacingY = 10;
     this.backgroundMax = 5;
     this.backgroundCounter = 0;
-    this.levelstage = 1;
+    this.levelstage = 1; //Stand des Aktuellen Levels
     this.gameSpeed = 4.0;
     this.playerColor = 'red';
     this.balloonSize = 5;
@@ -77,7 +77,6 @@ IlioLostInSpace.Game.prototype = {
         this.enemyTimer = 0;
         this.score = 0;
         this.backgroundCounter = 0;
-        this.levelstage = 1;
         this.gameSpeed = 4.0;
         this.playerColor = 'red';
         this.balloonSize = 5;
@@ -119,7 +118,7 @@ IlioLostInSpace.Game.prototype = {
                        this.createEnemyPlane();
                        this.enemyRate = this.game.rnd.integerInRange(3000, 6000);
                    }
-                   else if(this.levelstage == 3){
+                   else if(this.levelstage >= 3){
                        this.createEnemyMeteor();
                        this.enemyRate = this.game.rnd.integerInRange(3000, 6000);
                    }
@@ -382,24 +381,37 @@ IlioLostInSpace.Game.prototype = {
     createEnemyBird: function () {
         var x = -50;
         var y = this.game.rnd.integerInRange(50, this.game.world.height - (this.player.x + this.player.height));
+        var enemyFlip = this.game.rnd.integerInRange(0,1);
 
         var enemy = this.enemies.getFirstExists(false);
-        if (!enemy) {
+        if (!enemy|| enemy.enemyType == "Plane" || enemy.enemyType == "Meteor") {
             enemy = new EnemyBird(this.game, 0, 0);
             this.enemies.add(enemy);
+        }
+        if(enemyFlip == 0 ){
+            enemy.flip = true;
+        }else{
+            enemy.flip = false;
         }
         enemy.reset(x, y);
         enemy.revive();
     },
 
     createEnemyPlane: function () {
-        var y = -50;
-        var x = this.game.rnd.integerInRange(50, this.game.world.width - (this.player.x + this.player.width));
+        var x = -50;
+        var y = this.game.rnd.integerInRange(50, this.game.world.height - (this.player.x + this.player.height));
+        var enemyFlip = this.game.rnd.integerInRange(0,1);
 
         var enemy = this.enemies.getFirstExists(false);
-        if (!enemy) {
+
+        if (!enemy || enemy.enemyType == "Bird" || enemy.enemyType == "Meteor") {
             enemy = new EnemyPlane(this.game, 0, 0);
             this.enemies.add(enemy);
+        }
+        if(enemyFlip == 0 ){
+            enemy.flip = true;
+        }else{
+            enemy.flip = false;
         }
         enemy.reset(x, y);
         enemy.revive();
@@ -407,12 +419,17 @@ IlioLostInSpace.Game.prototype = {
 
     createEnemyMeteor: function () {
         var y = -50;
-        var x = this.game.rnd.integerInRange(50, this.game.world.width - (this.player.x + this.player.width));
+        var x = this.game.rnd.integerInRange(75, this.game.world.width-75);
 
         var enemy = this.enemies.getFirstExists(false);
-        if (!enemy) {
+        if (!enemy|| enemy.enemyType == "Bird" || enemy.enemyType == "Plane") {
             enemy = new EnemyMeteor(this.game, 0, 0);
             this.enemies.add(enemy);
+        }
+        if(x < this.game.width / 2){
+            enemy.flip = true;
+        }else{
+            enemy.flip = false;
         }
         enemy.reset(x, y);
         enemy.revive();
@@ -440,10 +457,10 @@ IlioLostInSpace.Game.prototype = {
 
         if (this.balloonsCounter == this.maxBallonCounter) {
             //SPECIAL EFFEKT AUSLÖSEN
-            this.balloons.visible = false;
+            this.balloons.callAll('kill');
             this.coins.visible = false;
-            this.enemies.callAll('enemyHit');
             this.spacedUp = true;
+            this.enemies.callAll('kill');
             this.generateSpecialCoins();
             this.spacedSprite.visible = true;
             this.specialCoins.setAll('visible', true);
@@ -525,6 +542,7 @@ IlioLostInSpace.Game.prototype = {
         this.resizeBalloon.kill();
         this.resizeBalloonEnd.body.velocity.y = 300;
         enemy.kill();
+        console.log("enemyHit: " +enemy);
         this.gameOverNow();
     },
 
@@ -543,9 +561,6 @@ IlioLostInSpace.Game.prototype = {
     },
 
     specialcoinGroundHit: function(ground, coin){
-       // coin.body.x = coin.specialX;
-       // coin.body.y = coin.specialY - (this.game.height - coin.y);
-       // coin.visible = true;
         coin.kill();
         coin.destroy();
 
@@ -561,6 +576,7 @@ IlioLostInSpace.Game.prototype = {
             this.resizeBalloon.y = (this.player.y - 47) - this.resizeBalloon.height;
         }
         else{
+            console.log("minimizeResizeBalloon");
             this.enemyHit(this.player, this.resizeBalloon);
         }
     },
