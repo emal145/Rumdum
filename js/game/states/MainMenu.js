@@ -39,7 +39,7 @@ IlioLostInSpace.MainMenu.prototype = {
 
   addMenuOption: function(text, callback) {
     var optionStyle = { font: '25pt TheMinion', fill: 'red', align: 'left', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
-    var txt = game.add.text(game.world.centerX, (this.optionCount * 60) + 250, text, optionStyle);
+    var txt = game.add.text(game.world.centerX, (this.optionCount * 60) + 300, text, optionStyle);
     txt.anchor.setTo(0.5);
     txt.stroke = "black";
     txt.strokeThickness = 12;
@@ -64,7 +64,7 @@ IlioLostInSpace.MainMenu.prototype = {
   },
 
   addTitle: function(text) {
-    var optionStyle = { font: '30pt TheMinion', fill: '#e9741e', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
+    var optionStyle = { font: '30pt TheMinion', fill: 'white', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
     var txt = game.add.text(game.world.centerX,  200, text, optionStyle);
     txt.anchor.setTo(0.5);
     txt.stroke = "black";

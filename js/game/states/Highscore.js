@@ -61,7 +61,7 @@ IlioLostInSpace.Highscore.prototype = {
             if (highscoreArray[i] != null) {
 
             scoreText = this.game.add.bitmapText (0, 40 + (40*i), 'minecraftia', '' + (i+1) + '. Platz : ' + highscoreArray[i], 30);
-            scoreText.x = this.game.width / 2 - (scoreText.textWidth / 2);
+            scoreText.x = this.game.width / 3;
             scoreText.tint = '#000';
             }
         }
