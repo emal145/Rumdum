@@ -8,7 +8,7 @@ IlioLostInSpace.Game = function () {
     this.balloonRate = 900;
     this.balloonTimer = 0;
     this.resizeSize = 5.0;
-    this.resizeRate = 500;
+    this.resizeRate = 800;
     this.resizeTimer = 0;
     this.enemyRate = 3000;
     this.enemyTimer = 0;
@@ -425,6 +425,7 @@ IlioLostInSpace.Game.prototype = {
             this.balloonSize++;
             this.score += 2*this.balloonSize;
             this.balloonsCounter++;
+            this.resizeTimer = this.game.time.now + this.resizeRate*2;
         }
         else {
             this.gameSpeed -= this.speedFactor;
