@@ -27,7 +27,7 @@ IlioLostInSpace.Preload.prototype = {
       this.load.image('cloud', 'assets/images/Cloud.png');
       this.load.image('star', 'assets/images/Star.png');
       this.load.image('speedbar', 'assets/images/speedbar.png');
-      this.load.image('speedbar', 'assets/images/speedstatus.png');
+      this.load.image('speedstatus', 'assets/images/speedstatus.png');
 
   },
   loadAudio: function() {

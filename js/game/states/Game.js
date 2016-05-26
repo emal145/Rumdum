@@ -10,12 +10,16 @@ IlioLostInSpace.Game = function () {
     this.resizeSize = 5.0;
     this.resizeRate = 800;
     this.resizeTimer = 0;
+    this.boosterTimer = 0;
+    this.boosterRate = 3500;
     this.miscRate = 10000;
     this.miscTimer = 0;
     this.enemyRate = 3000;
     this.enemyTimer = 0;
     this.maxBallonCounter = 5; //Anzahl der einzusammelnden Ballons für das Special Level
-
+    this.speedstatusVal = 0;
+    this.booster = false;
+    this.boosterActivated = false;
     this.score = 0;
     this.previousCoinType = null;
     this.spacedUpSpeed = 13;
@@ -37,6 +41,7 @@ IlioLostInSpace.Game = function () {
     this.playerColorNumber = 0;
     this.gameisOver = false;
     this.enemysStart = false;
+    this.boosterBlinkTimer = 0;
 
 };
 
@@ -49,6 +54,13 @@ IlioLostInSpace.Game.prototype = {
 
         this.addSprites();
         this.miscs = this.game.add.group();
+
+        var optionStyle = { font: '25pt TheMinion', fill: 'red', align: 'left', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
+        this.txt = game.add.text(game.world.centerX, 25, "Booster ready!", optionStyle);
+        this.txt.anchor.setTo(0.5);
+        this.txt.stroke = "white";
+        this.txt.strokeThickness = 12;
+        this.txt.visible = false;
         this.createFilter();
         this.spacedSprite.visible = false;
         this.createPlayer();
@@ -104,6 +116,25 @@ IlioLostInSpace.Game.prototype = {
            this.scrollBalloons();
            this.movePlayer();
            this.changePlayerColor();
+
+           if(this.boosterActivated == true){
+               if (this.boosterTimer < this.game.time.now) {
+                  this.booster = false;
+                   this.boosterActivated = false;
+                   this.txt.visible = false;
+                   this.speedstatusVal = 0.0;
+                   this.speedstatus.scale.setTo(this.speedstatusVal/10,0.5);
+                   this.boosterBlinkTimer = 0;
+               }else{
+                   this.boosterBlinkTimer += game.time.elapsed;
+                   if ( this.boosterBlinkTimer >= 50)
+                        {
+                            this.boosterBlinkTimer -= 50;
+                            this.txt.visible = !this.txt.visible;
+                            this.speedstatus.visible = !this.speedstatus.visible;
+                        }
+                  }
+           }
 
            if (this.spacedUp == false) {
                if (this.coinTimer < this.game.time.now) {
@@ -192,16 +223,20 @@ IlioLostInSpace.Game.prototype = {
         this.cKey = game.input.keyboard.addKey(Phaser.Keyboard.C);
       },
 
-    addSprites: function(){
+    addSprites: function() {
         this.backgroundTile = this.game.add.tileSprite(0, this.game.height - 7200, this.game.width, 7200, 'backgroundTile');
-        this.spacedBg =  this.game.add.tileSprite(0,0, this.game.width, this.game.height, 'spacedBlack');
+        this.spacedBg = this.game.add.tileSprite(0, 0, this.game.width, this.game.height, 'spacedBlack');
         this.spacedBg.visible = false;
-        this.ground = this.game.add.tileSprite( -100, this.game.height+15,this.game.width+200, 2, 'ground');
+        this.ground = this.game.add.tileSprite(-100, this.game.height + 15, this.game.width + 200, 2, 'ground');
         this.player = this.add.sprite(200, this.game.height / 2 + 150, 'player');
-        this.resizeBalloon = this.game.add.sprite(173, this.game.height/2-122+150, 'resizeBalloon');
-        this.resizeBalloonEnd = this.game.add.sprite(185, this.game.height/2-50+150, 'resizeBalloonEnd');
-        this.speedbar = this.game.add.sprite(this.game.width - 200, 50, 'speedbar');
+        this.resizeBalloon = this.game.add.sprite(173, this.game.height / 2 - 122 + 150, 'resizeBalloon');
+        this.resizeBalloonEnd = this.game.add.sprite(185, this.game.height / 2 - 50 + 150, 'resizeBalloonEnd');
+        this.speedbar = this.game.add.sprite(this.game.width - 200, 25, 'speedbar');
         this.speedbar.scale.setTo(0.5);
+        this.speedstatus = this.game.add.sprite(this.game.width - 199.5, 25, 'speedstatus');
+        this.speedstatus.scale.setTo(0.0, 0.5);
+        this.speedbar.bringToTop();
+        this.speedstatus.bringToTop();
 
     },
 
@@ -270,7 +305,7 @@ IlioLostInSpace.Game.prototype = {
 
     createBalloon: function (color) {
         var x = this.game.rnd.integerInRange(this.game.world.width - 50, 50);
-        var y = 0;
+        var y = -50;
 
         var balloon = this.balloons.getFirstExists(false);
         if (!balloon) {
@@ -318,9 +353,8 @@ IlioLostInSpace.Game.prototype = {
 
         coin.reset(x, y);
         coin.revive();
-        this.resizeBalloon.bringToTop();
-        this.resizeBalloonEnd.bringToTop();
-        this.player.bringToTop();
+        this.speedbar.bringToTop();
+        this.speedstatus.bringToTop();
         return coin;
     },
     generateCoins: function () {
@@ -480,12 +514,23 @@ IlioLostInSpace.Game.prototype = {
 
     balloonHit: function (player, balloon) {
 
+
         if (balloon.color == this.playerColor || balloon.color == 'rainbow') {
             this.gameSpeed += this.speedFactor;
             this.balloonSize++;
             this.score += 2*this.balloonSize;
             this.balloonsCounter++;
             this.resizeTimer = this.game.time.now + this.resizeRate*2;
+            if(balloon.color == 'rainbow' && this.booster == false){
+                this.speedstatusVal++;
+                this.speedstatus.scale.setTo(this.speedstatusVal/10,0.5);
+                if(this.speedstatusVal >= 5.0){
+                    this.booster = true;
+                    this.boosterActivated = false;
+                    this.txt.visible = true;
+
+                }
+            }
         }
         else {
             this.gameSpeed -= this.speedFactor;
@@ -738,8 +783,13 @@ IlioLostInSpace.Game.prototype = {
                 break;
         }
 
+        if(this.spaceKey.isDown && this.booster == true && this.boosterActivated == false){
+            this.boosterTimer = this.game.time.now + this.boosterRate;
+            this.boosterActivated = true;
+        }
+
         if (this.rightKey.isDown) {
-            if (this.spaceKey.isDown) {
+            if (this.spaceKey.isDown && this.booster == true) {
                 this.player.body.x += 25;
                 this.resizeBalloon.body.x += 25;
                 this.resizeBalloonEnd.body.x += 25;
@@ -751,7 +801,7 @@ IlioLostInSpace.Game.prototype = {
             this.player.animations.play(animationflyRight, 8, true);
             this.checkCollideRightBounds();
         } else if (this.leftKey.isDown) {
-            if (this.spaceKey.isDown) {
+            if(this.spaceKey.isDown && this.booster == true) {
                 this.player.body.x -= 25;
                 this.resizeBalloon.body.x -= 25;
                 this.resizeBalloonEnd.body.x -= 25;
@@ -765,7 +815,7 @@ IlioLostInSpace.Game.prototype = {
             this.checkCollideLeftBounds();
         }
         else if (this.downKey.isDown) {
-            if (this.spaceKey.isDown) {
+            if (this.spaceKey.isDown && this.booster == true) {
                 this.player.body.y += 25;
                 this.resizeBalloon.body.y += 25;
                 this.resizeBalloonEnd.body.y += 25;
@@ -778,7 +828,7 @@ IlioLostInSpace.Game.prototype = {
             this.player.animations.play(animationfly, 8, true);
         }
         else if (this.upKey.isDown) {
-            if (this.spaceKey.isDown) {
+            if (this.spaceKey.isDown && this.booster == true) {
                 this.player.body.y -= 25;
                 this.resizeBalloon.body.y -= 25;
                 this.resizeBalloonEnd.body.y -= 25;
@@ -904,6 +954,7 @@ IlioLostInSpace.Game.prototype = {
      this.enemies.setAll('body.velocity.x', 0);
      this.coins.setAll('body.velocity.x', 0);
      this.levelstage = 1;
+     this.speedstatusVal = 0;
      this.enemyTimer = Number.MAX_VALUE;
      this.coinTimer = Number.MAX_VALUE;
      this.score = parseInt(this.score);

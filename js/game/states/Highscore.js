@@ -1,27 +1,15 @@
 
-
-
 IlioLostInSpace.Highscore = function() {
-
-
-
-
-
 
 };
 
-
-
 IlioLostInSpace.Highscore.prototype = {
-
-
 
     preload: function () {
         this.optionCount = 1;
     },
 
     create: function() {
-
 
         this.backgroundMenue = this.game.add.sprite(0,0,'highscoreBackground');
         this.backgroundMenue.height = this.game.height;
@@ -34,15 +22,15 @@ IlioLostInSpace.Highscore.prototype = {
 
         if (highscoreArray != null) {
 
-        for (var i = 0; i < highscoreArray.length; i++) {
+            for (var i = 0; i < highscoreArray.length; i++) {
 
-            if (highscoreArray[i] != null) {
+                if (highscoreArray[i] != null) {
 
-            scoreText = this.game.add.bitmapText (0, 40 + (40*i), 'minecraftia', '' + (i+1) + '. Platz : ' + highscoreArray[i], 30);
-            scoreText.x = this.game.width / 3;
+                    scoreText = this.game.add.bitmapText(0, 40 + (40 * i), 'minecraftia', '' + (i + 1) + '. Platz : ' + highscoreArray[i], 30);
+                    scoreText.x = this.game.width / 3;
 
+                }
             }
-        }
 
         }
 
@@ -51,12 +39,6 @@ IlioLostInSpace.Highscore.prototype = {
             this.game.state.start('MainMenu');
 
         });
-
-
-
-
-
-
 
     }
 
