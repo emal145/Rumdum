@@ -68,6 +68,9 @@ IlioLostInSpace.Game.prototype = {
         this.scoreText = this.game.add.bitmapText(10, 10, 'minecraftia', 'Score: 0', 24);
         this.jetSound = this.game.add.audio('rocket');
         this.coinSound = this.game.add.audio('coin');
+        this.balloonPop = this.game.add.audio('balloonPop');
+        this.planeSound = this.game.add.audio('planeSound');
+        this.crowSound = this.game.add.audio('crow');
         this.deathSound = this.game.add.audio('death');
         this.gameMusic = this.game.add.audio('gameMusic');
         this.gameMusic.play('', 0, true);
@@ -507,7 +510,7 @@ IlioLostInSpace.Game.prototype = {
         this.resizeBalloon.x = (this.player.x + 10.5) - parseFloat(this.resizeBalloon.width/2).toFixed(1);
         this.resizeBalloon.y = (this.player.y - 47) - this.resizeBalloon.height;
 
-        this.coinSound.play();
+        this.balloonPop.play();
         balloon.kill();
         var dummyBalloon = new Balloon(this.game, balloon.x, balloon.y, balloon.color);
         balloon.destroy();

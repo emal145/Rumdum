@@ -29,12 +29,15 @@ IlioLostInSpace.Preload.prototype = {
   },
   loadAudio: function() {
 
-      this.load.audio('gameMusic', ['assets/audio/Pamgaea.mp3', 'assets/audio/Pamgaea.ogg']);
+      this.load.audio('gameMusic', ['assets/audio/Spielsound_Vorschlag2.mp3']);
       this.load.audio('titleMusic', 'assets/audio/menuMusic.wav');
       this.load.audio('rocket', 'assets/audio/rocket.wav');
       this.load.audio('bounce', 'assets/audio/bounce.wav');
       this.load.audio('coin', 'assets/audio/coin.wav');
       this.load.audio('death', 'assets/audio/death.wav');
+      this.load.audio('planeSound', 'assets/audio/Plane_overhead.mp3');
+      this.load.audio('balloonPop', 'assets/audio/balloonPop.mp3');
+      this.load.audio('crow', 'assets/audio/Crow.mp3');
 
   },
   loadSprites: function() {
