@@ -57,7 +57,7 @@ IlioLostInSpace.Preload.prototype = {
 
     this.loadingText = game.make.text(game.world.centerX,game.world.centerY, "Loading...", {
       font: 'bold 20pt TheMinion',
-      fill: '#000000',
+      fill: '#FFFFFF',
       align: 'center'
     });
     this.loadingText.anchor.set(0.5);
@@ -85,9 +85,9 @@ IlioLostInSpace.Preload.prototype = {
     this.game.add.existing(this.loadingText);
   },
   update: function() {
-   // if(this.cache.isSoundDecoded('gameMusic') && this.ready === true) {
+    //if(this.cache.isSoundDecoded('gameMusic') && this.ready === true) {
       this.state.start('MainMenu');
-   // }
+    //}
 
   },
   onLoadComplete: function() {

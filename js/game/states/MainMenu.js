@@ -1,6 +1,8 @@
 IlioLostInSpace.MainMenu = function() {
 
 
+
+
 };
 
 
@@ -8,9 +10,11 @@ IlioLostInSpace.MainMenu = function() {
 IlioLostInSpace.MainMenu.prototype = {
 
 
-  addMenuOption: function(text, callback) {
+
+
+  addMenuOption: function(margin,text, callback) {
     var optionStyle = { font: '25pt TheMinion', fill: 'red', align: 'left', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
-    var txt = game.add.text(game.world.centerX, (this.optionCount * 60) + 300, text, optionStyle);
+    var txt = game.add.text(game.world.centerX, (this.optionCount * 60) + margin, text, optionStyle);
     txt.anchor.setTo(0.5);
     txt.stroke = "white";
     txt.strokeThickness = 12;
@@ -60,23 +64,26 @@ IlioLostInSpace.MainMenu.prototype = {
     //this.backgroundMenue = this.game.add.tileSprite(0, this.game.height-600, 600, 600, 'backgroundMenue');
     //Hintergrundbild f�r das Men� wird geladen und an die H�he und Breite des Spielfensters angepasst
 
-    this.titleMusic = this.game.add.audio('titleMusic');
-    this.titleMusic.play('',0,1,true,true);
+    if (!this.game.global.mainMenuSoundIsPlaying ) {
+      this.titleMusic = this.game.add.audio('titleMusic');
+      this.titleMusic.play('', 0, 1, true, true);
+      this.game.global.mainMenuSoundIsPlaying = true;
+    }
 
 
-    this.addMenuOption('Spiel Starten', function() {
+    this.addMenuOption(300,'Spiel Starten', function() {
 
       this.game.state.start('Game');
       this.titleMusic.stop();
 
     });
-    this.addMenuOption('Highscore', function() {
+    this.addMenuOption(300,'Highscore', function() {
 
       this.game.state.start('Highscore');
 
 
     });
-    this.addMenuOption('Spiel Beenden', function() {
+    this.addMenuOption(300,'Spiel Beenden', function() {
 
 
         if (confirm("Wirklich Beenden?")) {

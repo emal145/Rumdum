@@ -37,6 +37,7 @@ IlioLostInSpace.Game = function () {
     this.playerColorNumber = 0;
     this.gameisOver = false;
     this.enemysStart = false;
+
 };
 
 IlioLostInSpace.Game.prototype = {
@@ -907,6 +908,7 @@ IlioLostInSpace.Game.prototype = {
      localStorage.setItem('score', this.score);
      var scoreboard = new Scoreboard(this.game);
      scoreboard.show(parseInt(this.score));
+     this.game.global.mainMenuSoundIsPlaying = false;
      this.setLeaderboard();
      this.score = 0;
 
