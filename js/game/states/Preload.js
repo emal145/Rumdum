@@ -22,6 +22,9 @@ IlioLostInSpace.Preload.prototype = {
       //Landschaft
       this.load.image('backgroundTile', 'assets/images/background2.png');
       this.load.image('ground', 'assets/images/ground.png');
+      this.load.image('spacedBlack', 'assets/images/spacedBackground.png');
+      this.load.image('cloud', 'assets/images/Cloud.png');
+      this.load.image('star', 'assets/images/Star.png');
 
   },
   loadAudio: function() {

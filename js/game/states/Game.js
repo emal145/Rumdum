@@ -10,6 +10,8 @@ IlioLostInSpace.Game = function () {
     this.resizeSize = 5.0;
     this.resizeRate = 800;
     this.resizeTimer = 0;
+    this.miscRate = 10000;
+    this.miscTimer = 0;
     this.enemyRate = 3000;
     this.enemyTimer = 0;
     this.maxBallonCounter = 5; //Anzahl der einzusammelnden Ballons für das Special Level
@@ -45,6 +47,7 @@ IlioLostInSpace.Game.prototype = {
         this.initializeKeys();
 
         this.addSprites();
+        this.miscs = this.game.add.group();
         this.createFilter();
         this.spacedSprite.visible = false;
         this.createPlayer();
@@ -111,6 +114,13 @@ IlioLostInSpace.Game.prototype = {
                    this.resizeTimer = this.game.time.now + this.resizeRate;
                }
 
+               if(this.miscTimer < this.game.time.now){
+                   this.createMisc();
+                   this.miscTimer = this.game.time.now + this.miscRate;
+
+               }
+
+
                if(this.enemyTimer < this.game.time.now) {
                    if(this.levelstage == 1 && this.enemysStart){
                        this.createEnemyBird();
@@ -173,21 +183,39 @@ IlioLostInSpace.Game.prototype = {
         this.rightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
         this.spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         this.cKey = game.input.keyboard.addKey(Phaser.Keyboard.C);
-        /*this.qKey = game.input.keyboard.addKey(Phaser.Keyboard.Q);
-        this.wKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
-        this.eKey = game.input.keyboard.addKey(Phaser.Keyboard.E);
-        this.rKey = game.input.keyboard.addKey(Phaser.Keyboard.R);
-        */
-
-    },
+      },
 
     addSprites: function(){
         this.backgroundTile = this.game.add.tileSprite(0, this.game.height - 7200, this.game.width, 7200, 'backgroundTile');
+        this.spacedBg =  this.game.add.tileSprite(0,0, this.game.width, this.game.height, 'spacedBlack');
+        this.spacedBg.visible = false;
         this.ground = this.game.add.tileSprite( -100, this.game.height+15,this.game.width+200, 2, 'ground');
         this.player = this.add.sprite(200, this.game.height / 2 + 150, 'player');
         this.resizeBalloon = this.game.add.sprite(173, this.game.height/2-122+150, 'resizeBalloon');
         this.resizeBalloonEnd = this.game.add.sprite(185, this.game.height/2-50+150, 'resizeBalloonEnd');
 
+    },
+
+    createMisc: function(){
+        var y = this.game.rnd.integerInRange(this.game.world.height - 50, 50);
+        var x = -100;
+
+        var scale = this.game.rnd.integerInRange(0, 100);
+        var misc = this.miscs.getFirstExists(false);
+        if (!misc || this.levelStage >= 3) {
+            if(this.levelstage < 3 ) {
+                misc = new Cloud(this.game, 0, 0);
+            }else{
+                misc = new Stars(this.game, 0,0);
+            }
+            this.miscs.add(misc);
+        }
+        misc.scale.setTo(scale/100);
+        misc.reset(x, y);
+        misc.revive();
+        this.resizeBalloon.bringToTop();
+        this.resizeBalloonEnd.bringToTop();
+        this.player.bringToTop();
     },
 
     createPlayer: function(){
@@ -232,7 +260,7 @@ IlioLostInSpace.Game.prototype = {
     },
 
     createBalloon: function (color) {
-        var x = this.game.rnd.integerInRange(this.game.world.height - 50, 50);
+        var x = this.game.rnd.integerInRange(this.game.world.width - 50, 50);
         var y = 0;
 
         var balloon = this.balloons.getFirstExists(false);
@@ -463,6 +491,8 @@ IlioLostInSpace.Game.prototype = {
             this.balloons.callAll('kill');
             this.coins.visible = false;
             this.spacedUp = true;
+            this.miscs.setAll('visible', false);
+            this.spacedBg.visible = true;
             this.enemies.callAll('kill');
             this.generateSpecialCoins();
             this.spacedSprite.visible = true;
@@ -630,6 +660,8 @@ IlioLostInSpace.Game.prototype = {
                 this.spacedUpCount += this.spacedUpSpeed;
                 if (this.spacedUpCount >= (30 * 10 + 20 * 20 + this.game.height)) {
                     this.spacedUp = false;
+                    this.spacedBg.visible = false;
+                    this.miscs.setAll('visible', true);
                     this.spacedUpCount = 0;
                     this.spacedSprite.visible = false;
                     //this.gameSpeed = 4.0;
