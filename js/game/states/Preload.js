@@ -36,7 +36,7 @@ IlioLostInSpace.Preload.prototype = {
       this.load.audio('bounce', 'assets/audio/bounce.wav');
       this.load.audio('coin', 'assets/audio/coin.wav');
       this.load.audio('death', 'assets/audio/death.wav');
-      this.load.audio('planeSound', 'assets/audio/Plane_overhead.mp3');
+      this.load.audio('planeSound', 'assets/audio/Airplane.mp3');
       this.load.audio('balloonPop', 'assets/audio/balloonPop.mp3');
       this.load.audio('crow', 'assets/audio/Crow.mp3');
 
