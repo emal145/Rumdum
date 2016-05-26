@@ -17,7 +17,8 @@ IlioLostInSpace.Preload.prototype = {
     }
   },
   loadImages: function () {
-    this.load.image('menueBackground', 'assets/images/background/backgroundMenue.png');
+    this.load.image('menueBackground', 'assets/images/background/backgroundMenueStars.png');
+    this.load.image('highscoreBackground', 'assets/images/background/highscoreBackground.png');
 
       //Landschaft
       this.load.image('backgroundTile', 'assets/images/background2.png');

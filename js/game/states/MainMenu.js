@@ -51,11 +51,11 @@ IlioLostInSpace.MainMenu.prototype = {
     this.optionCount = 1;
   },
   create: function() {
-    //this.backgroundMenue = this.game.add.sprite(0,0,'menueBackground');
-    this.game.stage.backgroundColor = '#00000';
+    this.backgroundMenue = this.game.add.sprite(0,0,'menueBackground');
 
-    //this.backgroundMenue.height = this.game.height;
-    //this.backgroundMenue.width = this.game.width;
+
+    this.backgroundMenue.height = this.game.height;
+    this.backgroundMenue.width = this.game.width;
     //Hintergrundbild f�r das Men� wird geladen und an die H�he und Breite des Spielfensters angepasst
     //this.backgroundMenue = this.game.add.tileSprite(0, this.game.height-600, 600, 600, 'backgroundMenue');
     //Hintergrundbild f�r das Men� wird geladen und an die H�he und Breite des Spielfensters angepasst
