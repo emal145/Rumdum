@@ -428,6 +428,7 @@ IlioLostInSpace.Game.prototype = {
             enemy.reset(x, y);
         }
         enemy.revive();
+        this.crowSound.play();
     },
 
     createEnemyPlane: function () {
@@ -449,6 +450,7 @@ IlioLostInSpace.Game.prototype = {
             enemy.reset(x, y);
         }
         enemy.revive();
+        this.planeSound.play();
     },
 
     createEnemyMeteor: function () {
