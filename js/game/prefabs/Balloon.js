@@ -14,7 +14,7 @@ var Balloon = function(game, x, y, color, key, frame) {
 
     this.animations.add('spinRed', [0,1,2,1]);
     this.animations.add('spinBlue', [3,4,5,4]);
-    this.animations.add('spinYellow', [6,7,8,7]);
+    this.animations.add('spinRainbow', [6,7,8,7]);
     this.animations.add('spinGreen', [9,10,11,10]);
 
 
@@ -25,8 +25,8 @@ var Balloon = function(game, x, y, color, key, frame) {
         case 'blue':
             this.animations.play('spinBlue', 10, true);
             break;
-        case 'yellow':
-            this.animations.play('spinYellow', 10, true);
+        case 'rainbow':
+            this.animations.play('spinRainbow', 10, true);
             break;
         case 'green':
             this.animations.play('spinGreen', 10, true);
@@ -63,8 +63,8 @@ Balloon.prototype.onRevived = function() {
         case 'blue':
             this.animations.play('spinBlue', 10, true);
             break;
-        case 'yellow':
-            this.animations.play('spinYellow', 10, true);
+        case 'rainbow':
+            this.animations.play('spinRainbow', 10, true);
             break;
         case 'green':
             this.animations.play('spinGreen', 10, true);

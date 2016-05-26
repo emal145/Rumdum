@@ -24,7 +24,7 @@ IlioLostInSpace.Game = function () {
     this.coinSpacingY = 10;
     this.backgroundMax = 5;
     this.backgroundCounter = 0;
-    this.levelstage = 2; //Stand des Aktuellen Levels
+    this.levelstage = 1; //Stand des Aktuellen Levels
     this.gameSpeed = 4.0;
     this.playerColor = 'red';
     this.balloonSize = 5;
@@ -283,23 +283,20 @@ IlioLostInSpace.Game.prototype = {
 
     generateBalloon: function () {
 
-        var balloonType = this.game.rnd.integer() % 3;
+        var balloonType = this.game.rnd.integer() % 4;
         switch (balloonType) {
             case 0:
                 this.createBalloon('red');
                 break;
             case 1:
-                // create a small group of coins
                 this.createBalloon('blue')
                 break;
             case 2:
-                //create a large coin group
                 this.createBalloon('green');
                 break;
-            //case 3:
-                //create a large coin group
-            //    this.createBalloon('yellow');
-            //    break;
+            case 3:
+                this.createBalloon('rainbow');
+                break;
 
             default:
                 break;
@@ -319,6 +316,9 @@ IlioLostInSpace.Game.prototype = {
 
         coin.reset(x, y);
         coin.revive();
+        this.resizeBalloon.bringToTop();
+        this.resizeBalloonEnd.bringToTop();
+        this.player.bringToTop();
         return coin;
     },
     generateCoins: function () {
@@ -649,7 +649,7 @@ IlioLostInSpace.Game.prototype = {
 
             this.backgroundTile.tilePosition.y += bgSpeed;
             //Enemys erst nach einem start vorsprung starten
-            if(this.backgroundTile.tilePosition.y >= 600){
+            if(this.backgroundTile.tilePosition.y >= 1200){
                 this.enemysStart = true;
             }
             if (this.backgroundTile.tilePosition.y >= ykoordinate - bgSpeed) {
@@ -674,9 +674,9 @@ IlioLostInSpace.Game.prototype = {
                     this.spacedUpCount = 0;
                     this.spacedSprite.visible = false;
                     //this.gameSpeed = 4.0;
-                    this.balloonSize = 5;
+                    this.balloonSize = 5.0;
+                    this.resizeSize = 5.0;
                     this.balloonsCounter = 0;
-                    this.resizeBalloon.scale.set(0.5, 0.5);
                     this.resizeBalloon.x = (this.player.x + 10.5) - parseFloat(this.resizeBalloon.width / 2).toFixed(1);
                     this.resizeBalloon.y = (this.player.y - 47) - this.resizeBalloon.height;
 
@@ -898,7 +898,7 @@ IlioLostInSpace.Game.prototype = {
      this.deathSound.play();
      this.gameMusic.stop();
      this.gameisOver = true;
-
+     this.balloonsCounter = 0;
      this.enemies.setAll('body.velocity.x', 0);
      this.coins.setAll('body.velocity.x', 0);
      this.levelstage = 1;
