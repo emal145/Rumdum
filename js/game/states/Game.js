@@ -200,6 +200,8 @@ IlioLostInSpace.Game.prototype = {
         this.player = this.add.sprite(200, this.game.height / 2 + 150, 'player');
         this.resizeBalloon = this.game.add.sprite(173, this.game.height/2-122+150, 'resizeBalloon');
         this.resizeBalloonEnd = this.game.add.sprite(185, this.game.height/2-50+150, 'resizeBalloonEnd');
+        this.speedbar = this.game.add.sprite(this.game.width - 200, 50, 'speedbar');
+        this.speedbar.scale.setTo(0.5);
 
     },
 
@@ -478,7 +480,7 @@ IlioLostInSpace.Game.prototype = {
 
     balloonHit: function (player, balloon) {
 
-        if (balloon.color == this.playerColor) {
+        if (balloon.color == this.playerColor || balloon.color == 'rainbow') {
             this.gameSpeed += this.speedFactor;
             this.balloonSize++;
             this.score += 2*this.balloonSize;

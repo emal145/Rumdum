@@ -26,6 +26,8 @@ IlioLostInSpace.Preload.prototype = {
       this.load.image('spacedBlack', 'assets/images/spacedBackground.png');
       this.load.image('cloud', 'assets/images/Cloud.png');
       this.load.image('star', 'assets/images/Star.png');
+      this.load.image('speedbar', 'assets/images/speedbar.png');
+      this.load.image('speedbar', 'assets/images/speedstatus.png');
 
   },
   loadAudio: function() {
@@ -43,7 +45,7 @@ IlioLostInSpace.Preload.prototype = {
   },
   loadSprites: function() {
       this.load.spritesheet('coins', 'assets/images/coins-ps.png', 51, 51, 7);
-      this.load.spritesheet('balloons', 'assets/images/balloons.png', 150, 225, 12);
+      this.load.spritesheet('balloons', 'assets/images/balloons.png', 150, 250, 12);
       this.load.spritesheet('player', 'assets/images/player.png', 100, 100, 16);
       this.load.spritesheet('missile', 'assets/images/missiles-ps.png', 361, 218, 4);
       this.load.spritesheet('resizeBalloon', 'assets/images/SingleCollectBalloons_old.png', 150, 150, 4);
