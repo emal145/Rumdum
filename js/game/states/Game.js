@@ -514,23 +514,23 @@ IlioLostInSpace.Game.prototype = {
 
     balloonHit: function (player, balloon) {
 
+        if(balloon.color == 'rainbow' && this.booster == false){
+            this.speedstatusVal++;
+            this.speedstatus.scale.setTo(this.speedstatusVal/10,0.5);
+            if(this.speedstatusVal >= 5.0){
+                this.booster = true;
+                this.boosterActivated = false;
+                this.txt.visible = true;
 
-        if (balloon.color == this.playerColor || balloon.color == 'rainbow') {
+            }
+        }
+        if (balloon.color == this.playerColor) {
             this.gameSpeed += this.speedFactor;
             this.balloonSize++;
             this.score += 2*this.balloonSize;
             this.balloonsCounter++;
             this.resizeTimer = this.game.time.now + this.resizeRate*2;
-            if(balloon.color == 'rainbow' && this.booster == false){
-                this.speedstatusVal++;
-                this.speedstatus.scale.setTo(this.speedstatusVal/10,0.5);
-                if(this.speedstatusVal >= 5.0){
-                    this.booster = true;
-                    this.boosterActivated = false;
-                    this.txt.visible = true;
 
-                }
-            }
         }
         else {
             this.gameSpeed -= this.speedFactor;
