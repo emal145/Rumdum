@@ -524,7 +524,7 @@ IlioLostInSpace.Game.prototype = {
 
             }
         }
-        if (balloon.color == this.playerColor) {
+        else if (balloon.color == this.playerColor) {
             this.gameSpeed += this.speedFactor;
             this.balloonSize++;
             this.score += 2*this.balloonSize;
@@ -532,7 +532,7 @@ IlioLostInSpace.Game.prototype = {
             this.resizeTimer = this.game.time.now + this.resizeRate*2;
 
         }
-        else {
+        else if(balloon.color != this.playerColor && balloon.color != 'rainbow') {
             this.gameSpeed -= this.speedFactor;
             this.balloonSize--;
             this.balloonsCounter = 0;
@@ -963,6 +963,7 @@ IlioLostInSpace.Game.prototype = {
      this.gameMusic.stop();
      this.gameisOver = true;
      this.balloonsCounter = 0;
+     this.speedstatusVal = 0;
      this.enemies.setAll('body.velocity.x', 0);
      this.coins.setAll('body.velocity.x', 0);
      this.levelstage = 1;
