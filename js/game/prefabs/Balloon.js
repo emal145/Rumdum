@@ -16,6 +16,11 @@ var Balloon = function(game, x, y, color, key, frame) {
     this.animations.add('spinBlue', [3,4,5,4]);
     this.animations.add('spinRainbow', [14,15,16,15]);
     this.animations.add('spinGreen', [17,18,19,18]);
+    this.animations.add('burstRed', [6,7,8,9]);
+    this.animations.add('burstBlue', [10,11,12,13]);
+    this.animations.add('burstRainbow', [20,21,22,23]);
+    this.animations.add('burstGreen', [24,25,26,27]);
+
 
 
     switch (this.color){

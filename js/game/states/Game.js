@@ -569,7 +569,19 @@ IlioLostInSpace.Game.prototype = {
         balloon.destroy();
         this.game.add.existing(dummyBalloon);
 
-        //dummyBalloon.animations.play('spin2', 3, true);
+        if(dummyBalloon.color == 'red') {
+            dummyBalloon.animations.play('burstRed', true);
+        } else if(dummyBalloon.color == 'blue') {
+            dummyBalloon.animations.play('burstBlue', true);
+
+        }else if(dummyBalloon.color == 'rainbow') {
+            dummyBalloon.animations.play('burstRainbow', true);
+
+        }else if(dummyBalloon.color == 'green') {
+            dummyBalloon.animations.play('burstGreen', true);
+
+        }
+
 
         var scoreTween = this.game.add.tween(dummyBalloon).to({
             x: balloon.x,
