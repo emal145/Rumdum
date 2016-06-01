@@ -8,14 +8,14 @@ var Balloon = function(game, x, y, color, key, frame) {
     Phaser.Sprite.call(this, game, x, y, key, frame);
 
     this.color = color;
-    this.scale.setTo(0.35);
+    //this.scale.setTo(1);
     this.anchor.setTo(0.5);
     this.game.physics.arcade.enableBody(this);
 
     this.animations.add('spinRed', [0,1,2,1]);
     this.animations.add('spinBlue', [3,4,5,4]);
-    this.animations.add('spinRainbow', [6,7,8,7]);
-    this.animations.add('spinGreen', [9,10,11,10]);
+    this.animations.add('spinRainbow', [14,15,16,15]);
+    this.animations.add('spinGreen', [17,18,19,18]);
 
 
     switch (this.color){
