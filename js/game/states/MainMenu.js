@@ -106,7 +106,7 @@ IlioLostInSpace.MainMenu.prototype = {
     this.menuTitle = this.add.sprite(this.game.world.centerX, this.game.world.centerY - 200, 'logo');
     this.menuTitle.anchor.setTo(0.5);
     this.menuTitle.scale.setTo(1);
-    this.addTitle("Illios Lost in Space");
+    this.addTitle("Ilios Lost in Space");
 
 
 
