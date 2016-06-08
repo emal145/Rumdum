@@ -9,6 +9,7 @@ IlioLostInSpace.Boot.prototype = {
     this.load.image('logo', 'assets/images/logo.png');
     this.load.image('preloadbar', 'assets/images/loadbar.png');
 
+
   },
   preload: function() {
    this.loadImages();

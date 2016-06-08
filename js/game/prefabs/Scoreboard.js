@@ -27,26 +27,26 @@ Scoreboard.prototype.show = function(score) {
 
   this.y = this.game.height;
 
-  gameoverText = this.game.add.bitmapText(0,100, 'minecraftia', 'You Died.', 36);
+  gameoverText = this.game.add.bitmapText(0,100, 'minecraftia', 'Du bist gestorben.', 36);
   gameoverText.x = this.game.width/2 - (gameoverText.textWidth / 2);
   this.add(gameoverText);
 
-  scoreText = this.game.add.bitmapText(0, 200, 'minecraftia', 'Your Score: ' + score, 24);
+  scoreText = this.game.add.bitmapText(0, 200, 'minecraftia', 'Deine Punktzahl: ' + score, 24);
   scoreText.x = this.game.width / 2 - (scoreText.textWidth / 2);  
   this.add(scoreText);
 
-  highScoreText = this.game.add.bitmapText(0, 250, 'minecraftia', 'Your High Score: ' + highscore, 24);
+  highScoreText = this.game.add.bitmapText(0, 250, 'minecraftia', 'Dein Highscore: ' + highscore, 24);
   highScoreText.x = this.game.width / 2 - (highScoreText.textWidth / 2);  
   this.add(highScoreText);
 
-  startText = this.game.add.bitmapText(0, 300, 'minecraftia', 'Tap to play again!', 16);
+  startText = this.game.add.bitmapText(0, 300, 'minecraftia', 'Maus Taste Drücken um erneut zu spielen!', 16);
   startText.x = this.game.width / 2 - (startText.textWidth / 2);  
   this.add(startText);
 
 
 
   if(isNewHighScore) {
-    newHighScoreText = this.game.add.bitmapText(0, 100, 'minecraftia', 'New High Score!', 12);
+    newHighScoreText = this.game.add.bitmapText(0, 100, 'minecraftia', 'Neuer Highscore!', 12);
     newHighScoreText.tint = 0x4ebef7; // '#4ebef7'
     newHighScoreText.x = gameoverText.x + gameoverText.textWidth + 40;
     newHighScoreText.angle = 45;

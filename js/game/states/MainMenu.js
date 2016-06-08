@@ -13,22 +13,21 @@ IlioLostInSpace.MainMenu.prototype = {
 
 
   addMenuOption: function(margin,text, callback) {
-    var optionStyle = { font: '25pt TheMinion', fill: 'red', align: 'left', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
+    var optionStyle = { font: '25pt TheMinion', fill: '#ffff00', align: 'left', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
     var txt = game.add.text(game.world.centerX, (this.optionCount * 60) + margin, text, optionStyle);
     txt.anchor.setTo(0.5);
-    txt.stroke = "white";
-    txt.strokeThickness = 12;
+    txt.stroke = "red";
+    txt.strokeThickness = 4;
     var onOver = function (target) {
       target.fill = "#FEFFD5";
-      target.stroke = "rgba(200,200,200,0.5)";
-      txt.useHandCursor = true;
+
     };
     var onOut = function (target) {
-      target.fill = "red";
-      target.stroke = "white";
+      target.fill = "#ffff00";
+      target.stroke = "red";
       txt.useHandCursor = false;
     };
-    //txt.useHandCursor = true;
+
     txt.inputEnabled = true;
     txt.events.onInputUp.add(callback, this);
     txt.events.onInputOver.add(onOver, this);
@@ -42,11 +41,36 @@ IlioLostInSpace.MainMenu.prototype = {
     var optionStyle = { font: '30pt TheMinion', fill: '#ffff00', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
     var txt = game.add.text(game.world.centerX,  200, text, optionStyle);
     txt.anchor.setTo(0.5);
-    txt.stroke = "grey";
+    txt.stroke = "red";
     txt.strokeThickness = 4;
 
 
     this.optionCount ++;
+
+
+  },
+  addHowToPlay: function(text, callback) {
+    var optionStyle = { font: '25pt TheMinion', fill: '#ffff00', align: 'left', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
+    var txt = game.add.text(game.world.centerX + 302 ,game.world.centerY + 200, text, optionStyle);
+    txt.anchor.setTo(0.5);
+    txt.stroke = "red";
+    txt.align = "left"
+    txt.strokeThickness = 4;
+    var onOver = function (target) {
+      target.fill = "#FEFFD5";
+
+    };
+    var onOut = function (target) {
+      target.fill = "#ffff00";
+      target.stroke = "red";
+      txt.useHandCursor = false;
+    };
+
+    txt.inputEnabled = true;
+    txt.events.onInputUp.add(callback, this);
+    txt.events.onInputOver.add(onOver, this);
+    txt.events.onInputOut.add(onOut, this);
+
 
 
   },
@@ -94,26 +118,25 @@ IlioLostInSpace.MainMenu.prototype = {
     });
 
 
-    //this.player = this.add.sprite(this.game.width/2,this.game.height-50  , 'player');
-    //this.player.anchor.setTo(0.5);
-    //this.player.scale.setTo(0.8);
 
-    //this.player.animations.add('fly', [0,1,2,3,2,1]);
-    //this.player.animations.play('fly', 8, true);
 
-    //this.game.add.tween(this.player).to({y: this.player.y - 16}, 500, Phaser.Easing.Linear.NONE, true, 0, Infinity, true);
 
-    this.menuTitle = this.add.sprite(this.game.world.centerX, this.game.world.centerY - 200, 'logo');
+    this.menuTitle = this.add.sprite(this.game.world.centerX, this.game.world.centerY - 190, 'logo');
     this.menuTitle.anchor.setTo(0.5);
     this.menuTitle.scale.setTo(1);
     this.addTitle("Ilios Lost in Space");
 
+    this.howToPlay = this.add.sprite(this.game.world.centerX + 300, this.game.world.centerY + 200 , 'howToPlaySymbol');
+    this.howToPlay.anchor.setTo(0.5);
+    this.howToPlay.scale.setTo(0.8);
+    this.addHowToPlay('?', function() {
+
+      this.game.state.start('HowToPlay');
 
 
+    });
 
-    //this.startText = this.game.add.bitmapText(0,0, 'minecraftia', 'tap to start', 32);
-    //this.startText.x = this.game.width / 2 - this.startText.textWidth / 2;
-    //this.startText.y = this.game.height / 2 + this.menuTitle.height / 2;
+
 
 
   },

@@ -26,10 +26,19 @@ IlioLostInSpace.Highscore.prototype = {
 
                 if (highscoreArray[i] != null) {
 
-                    scoreText = this.game.add.bitmapText(0, 40 + (40 * i), 'minecraftia', '' + (i + 1) + '. Platz : ' + highscoreArray[i], 30);
-                    scoreText.x = this.game.width / 3;
+                    if (i < 9) {
+                        scoreText = this.game.add.bitmapText(0, 40 + (40 * i), 'minecraftia', ' ' + (i + 1) + '. Platz : ' + highscoreArray[i], 30);
+                        scoreText.x = this.game.width / 3;
+                    }
+                    if (i == 9) {
+
+                        scoreText = this.game.add.bitmapText(0, 40 + (40 * i), 'minecraftia', '' + (i + 1) + '. Platz : ' + highscoreArray[i], 30);
+                        scoreText.x = this.game.width / 3
+
+                    }
 
                 }
+
             }
 
         }

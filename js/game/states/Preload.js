@@ -28,6 +28,8 @@ IlioLostInSpace.Preload.prototype = {
       this.load.image('star', 'assets/images/Star.png');
       this.load.image('speedbar', 'assets/images/speedbar.png');
       this.load.image('speedstatus', 'assets/images/speedstatus.png');
+      this.load.image('howToPlaySymbol', 'assets/images/howToPlaySymbol.png');
+      this.load.image('howToPlayImage', 'assets/images/howToPlay.png');
 
   },
   loadAudio: function() {
