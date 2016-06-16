@@ -4,7 +4,7 @@ IlioLostInSpace.Game = function () {
 
     this.coinRate = 900;
     this.coinTimer = 0;
-
+    this.veloFactor = 0;
     this.balloonRate = 900;
     this.balloonTimer = 0;
     this.resizeSize = 5.0;
@@ -203,6 +203,24 @@ IlioLostInSpace.Game.prototype = {
            if (this.spacedUp == true) {
                this.filter.update();
            }
+
+
+           if (this.balloonSize > 3) {
+
+               this.player.body.velocity.y = 0;
+               this.resizeBalloon.body.velocity.y = 0;
+               this.resizeBalloonEnd.body.velocity.y = 0;
+               this.veloFactor = 0;
+
+           } else {
+
+
+               this.player.body.velocity.y = this.veloFactor;
+               this.resizeBalloon.body.velocity.y = this.veloFactor;
+               this.resizeBalloonEnd.body.velocity.y = this.veloFactor;
+
+           }
+
        }
     },
 
@@ -538,6 +556,7 @@ IlioLostInSpace.Game.prototype = {
             this.balloonsCounter = 0;
         }
 
+
         this.resizeSize = parseFloat(this.balloonSize).toFixed(1);
         this.balloonRate = 100/this.gameSpeed*40;
         this.coinRate = 100/this.gameSpeed*40;
@@ -669,6 +688,7 @@ IlioLostInSpace.Game.prototype = {
 
     minimizeResizeBalloon: function(){
         this.resizeSize -= 0.1;
+        this.veloFactor += 5;
         this.balloonSize = parseInt(this.resizeSize);
         if(this.resizeSize >= 0) {
             var newscale = this.resizeSize / 10;
