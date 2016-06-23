@@ -234,7 +234,6 @@ IlioLostInSpace.Game.prototype = {
                this.player.body.velocity.y = this.veloFactor;
                this.resizeBalloon.body.velocity.y = this.veloFactor;
                this.resizeBalloonEnd.body.velocity.y = this.veloFactor;
-
            }
 
        }
