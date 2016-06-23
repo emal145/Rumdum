@@ -16,7 +16,7 @@ IlioLostInSpace.HowToPlay.prototype = {
 
 
 
-        IlioLostInSpace.MainMenu.prototype.addMenuOption.call(this,500,'Back to Menu', function() {
+        IlioLostInSpace.MainMenu.prototype.addMenuOption.call(this,500,'Zurueck', function() {
 
             this.game.state.start('MainMenu');
 

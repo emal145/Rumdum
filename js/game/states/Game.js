@@ -4,7 +4,6 @@ IlioLostInSpace.Game = function () {
 
     this.coinRate = 900;
     this.coinTimer = 0;
-
     this.balloonRate = 900; //Rate, ab wann Ballons erzeugt werden sollen
     this.balloonTimer = 0; //Timer, ob ein neuer Ballon erzeugt werden soll
     this.resizeSize = 5.0; //Wert, welcher Ballongröße definiert
@@ -15,6 +14,17 @@ IlioLostInSpace.Game = function () {
     this.miscRate = 10000; //Rate der Wolken
     this.miscTimer = 0; //Timer für die Wolken
     this.enemyRate = 3000;  //Rate, wann Gegner erzeugt werden sollen
+    this.veloFactor = 0;
+    this.balloonRate = 900;
+    this.balloonTimer = 0;
+    this.resizeSize = 5.0;
+    this.resizeRate = 800;
+    this.resizeTimer = 0;
+    this.boosterTimer = 0;
+    this.boosterRate = 3500;
+    this.miscRate = 10000;
+    this.miscTimer = 0;
+    this.enemyRate = 3000;
     this.enemyTimer = 0;
     this.maxBallonCounter = 5; //Anzahl der einzusammelnden Ballons für das Special Level
     this.speedstatusVal = 0; //Anzeige Status des Boosters
@@ -209,6 +219,24 @@ IlioLostInSpace.Game.prototype = {
            if (this.spacedUp == true) {
                this.filter.update();
            }
+
+
+           if (this.balloonSize > 3) {
+
+               this.player.body.velocity.y = 0;
+               this.resizeBalloon.body.velocity.y = 0;
+               this.resizeBalloonEnd.body.velocity.y = 0;
+               this.veloFactor = 0;
+
+           } else {
+
+
+               this.player.body.velocity.y = this.veloFactor;
+               this.resizeBalloon.body.velocity.y = this.veloFactor;
+               this.resizeBalloonEnd.body.velocity.y = this.veloFactor;
+
+           }
+
        }
     },
 
@@ -545,6 +573,7 @@ IlioLostInSpace.Game.prototype = {
             this.balloonsCounter = 0;
         }
 
+
         this.resizeSize = parseFloat(this.balloonSize).toFixed(1);
         this.balloonRate = 100/this.gameSpeed*40;
         this.coinRate = 100/this.gameSpeed*40;
@@ -676,6 +705,7 @@ IlioLostInSpace.Game.prototype = {
 
     minimizeResizeBalloon: function(){
         this.resizeSize -= 0.1;
+        this.veloFactor += 5;
         this.balloonSize = parseInt(this.resizeSize);
         if(this.resizeSize >= 0) {
             var newscale = this.resizeSize / 10;

@@ -89,9 +89,9 @@ IlioLostInSpace.Preload.prototype = {
     this.game.add.existing(this.loadingText);
   },
   update: function() {
-    //if(this.cache.isSoundDecoded('gameMusic') && this.ready === true) {
+    if(this.cache.isSoundDecoded('gameMusic') && this.ready === true) {
       this.state.start('MainMenu');
-    //}
+    }
 
   },
   onLoadComplete: function() {
