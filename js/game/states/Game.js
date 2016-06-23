@@ -5,19 +5,19 @@ IlioLostInSpace.Game = function () {
     this.coinRate = 900;
     this.coinTimer = 0;
 
-    this.balloonRate = 900;
-    this.balloonTimer = 0;
-    this.resizeSize = 5.0;
-    this.resizeRate = 800;
-    this.resizeTimer = 0;
-    this.boosterTimer = 0;
-    this.boosterRate = 3500;
-    this.miscRate = 10000;
-    this.miscTimer = 0;
-    this.enemyRate = 3000;
+    this.balloonRate = 900; //Rate, ab wann Ballons erzeugt werden sollen
+    this.balloonTimer = 0; //Timer, ob ein neuer Ballon erzeugt werden soll
+    this.resizeSize = 5.0; //Wert, welcher Ballongröße definiert
+    this.resizeRate = 800; //Rate, ab wann der Ballon verkleinert werden soll
+    this.resizeTimer = 0; //Timer, ob der Ballon verkleinert werden soll
+    this.boosterTimer = 0; //Timer, ob der Booster vorbei ist
+    this.boosterRate = 3500; //Dauer der Booster Zeit
+    this.miscRate = 10000; //Rate der Wolken
+    this.miscTimer = 0; //Timer für die Wolken
+    this.enemyRate = 3000;  //Rate, wann Gegner erzeugt werden sollen
     this.enemyTimer = 0;
     this.maxBallonCounter = 5; //Anzahl der einzusammelnden Ballons für das Special Level
-    this.speedstatusVal = 0;
+    this.speedstatusVal = 0; //Anzeige Status des Boosters
     this.booster = false;
     this.boosterActivated = false;
     this.score = 0;
@@ -29,7 +29,7 @@ IlioLostInSpace.Game = function () {
     this.backgroundMax = 5;
     this.backgroundCounter = 0;
     this.levelstage = 1; //Stand des Aktuellen Levels
-    this.gameSpeed = 4.0;
+    this.gameSpeed = 4.0; //Scroll geschwindikeit
     this.playerColor = 'red';
     this.balloonSize = 5;
     this.balloonsCounter = 0;
@@ -38,7 +38,7 @@ IlioLostInSpace.Game = function () {
     this.spacedSprite;
     this.spacedUpCount = 0;
     this.spacedUp = false;
-    this.playerColorNumber = 0;
+    this.playerColorNumber = 0; //Nummer der Farbe des Monsters
     this.gameisOver = false;
     this.enemysStart = false;
     this.boosterBlinkTimer = 0;
@@ -108,15 +108,22 @@ IlioLostInSpace.Game.prototype = {
         this.playerColorNumber = 0;
         this.gameisOver = false;
     },
+
     update: function () {
+        //Nur wenn das Spiel nicht verloren ist
        if(this.gameisOver == false) {
 
+           /*
+            * Hintegrund wird gescrollt, Gegner, Münzen, Ballons werden erzeugt sowie bewegt
+            * Reaktion des Anweders (Farbwechsel, Monster bewegen) umsetzen
+            */
            this.scrollBackground();
            this.scrollCoins();
            this.scrollBalloons();
            this.movePlayer();
            this.changePlayerColor();
 
+           //Wenn der Booster aktiviert wurde, Anzeige verringern, und Booster Schriftzug blinken lassen
            if(this.boosterActivated == true){
                if (this.boosterTimer < this.game.time.now) {
                   this.booster = false;
@@ -136,6 +143,8 @@ IlioLostInSpace.Game.prototype = {
                   }
            }
 
+           //NUR WENN NICHT SONDERZUSTAND! (ABGESPACED!)
+           // Wenn wartezeit vorbei, neuen Ballons, wollken oder Münzen erstellen erstellen
            if (this.spacedUp == false) {
                if (this.coinTimer < this.game.time.now) {
                    this.generateCoins();
@@ -159,6 +168,7 @@ IlioLostInSpace.Game.prototype = {
                }
 
 
+               //Wenn wartezeit vorbei, neuen Gegner erstellen
                if(this.enemyTimer < this.game.time.now) {
                    if(this.levelstage == 1 && this.enemysStart){
                        this.createEnemyBird();
@@ -178,15 +188,10 @@ IlioLostInSpace.Game.prototype = {
            else {
                //SPECIAL COINS MUSTER GENERIEREN
                this.scrollSpecialCoins();
-               /* if (this.coinTimer < this.game.time.now) {
-                this.generateSpecialCoins();
-                this.coinTimer = this.game.time.now + 75;
-                }
-                */
            }
 
 
-
+           //Auf Kollisionen reagieren!
            this.game.physics.arcade.overlap(this.ground, this.coins, this.groundHit, null, this);
            this.game.physics.arcade.overlap(this.ground, this.balloons, this.balloonsGroundHit, null, this);
            this.game.physics.arcade.overlap(this.ground, this.specialCoins, this.specialcoinGroundHit, null, this);
@@ -200,12 +205,14 @@ IlioLostInSpace.Game.prototype = {
            this.game.physics.arcade.overlap(this.resizeBalloonEnd, this.enemies, this.enemyHit, null, this);
 
 
+           //Wenn abgespaceter Modus, Hintegrund Filter aktualisieren
            if (this.spacedUp == true) {
                this.filter.update();
            }
        }
     },
 
+    //Spiel beenden
     shutdown: function () {
         this.coins.destroy();
         this.enemies.destroy();
@@ -958,7 +965,7 @@ IlioLostInSpace.Game.prototype = {
         this.spacedSprite.anchor.setTo(0.5, 0.5);
     },
 
- gameOverNow: function() {
+    gameOverNow: function() {
      this.deathSound.play();
      this.gameMusic.stop();
      this.gameisOver = true;
